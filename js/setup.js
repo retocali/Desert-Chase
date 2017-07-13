@@ -7,7 +7,7 @@ var setupState = {
 
 function makeBackground() {
     // Sets up the background
-    // game.scale.pageAlignHorizontally = true; 
+    game.scale.pageAlignHorizontally = true; 
     game.scale.pageAlignVertically = true; 
     game.scale.refresh();
     desertBackground = game.add.image(game.world.centerX, game.world.centerY, 'desertBackground');
