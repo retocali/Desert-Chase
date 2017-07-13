@@ -15,6 +15,10 @@ var START_X = 3;
 var START_Y = 3;
 var MOVES = 2;
 
+// Level
+var LEVEL = 1;
+var levelText;
+
 // UI Constants
 var TILE_SIZE = 100*scaleRatio;    
 var MARGIN = 10*scaleRatio;
