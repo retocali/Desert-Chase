@@ -1,12 +1,13 @@
 var loadState = {
     preload: function() {
 
-    	// var loadingMessage = game.add.bitmapText(game.world.centerX, game.world.centerY, 'zigFont', "Loading    ...", 24);
-     //    loadingMessage.anchor.setTo(0.5,0.5);
+    	// var loadingMessage = game.add.bitmapText(game.world.centerX, game.world.centerY, 'calibri   ', "Loading    ...", 24);
+        // loadingMessage.anchor.setTo(0.5,0.5);
 
 
         // loadingMessage.text = "Loading Sounds ...";
         
+
         // Used to load the background music, game over and win sounds, and UI sounds
         // game.load.audio('winSound', 'assets/sounds/win.mp3');
         // game.load.audio('loseSound', 'assets/sounds/gameover.wav');
