@@ -1,6 +1,9 @@
 var mainState = {
     preload: function() {
 
+    	makeBackground();
+
+
     },
     create: function() {
         initializeGame();

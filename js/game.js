@@ -4,6 +4,8 @@ var canvas_x = window.innerWidth;
 var canvas_y = window.innerHeight;
 var scaleRatio = Math.min(canvas_x/gameX, canvas_y/gameY);
 
+var desertBackground;
+
 var game = new Phaser.Game(gameX*scaleRatio, gameY*scaleRatio, Phaser.CANVAS);
 
 // Game Constants

@@ -7,19 +7,20 @@ var loadState = {
 
         // loadingMessage.text = "Loading Sounds ...";
         
-        // // Used to load the background music, game over and win sounds, and UI sounds
+
+        // Used to load the background music, game over and win sounds, and UI sounds
         // game.load.audio('winSound', 'assets/sounds/win.mp3');
         // game.load.audio('loseSound', 'assets/sounds/gameover.wav');
 
         // loadingMessage.text = "Loading UI ...";
 
         //background image
-        game.load.image('gameOver', 'assets/sprites/menus/desertBackground.png');
+        game.load.image('desertBackground', 'assets/sprites/desertBackground.png');
 
 
         // Overlays
-        game.load.image('gameOver', 'assets/sprites/menus/gameover.png');
-        game.load.image('winScreen', 'assets/sprites/menus/youwin.png');
+        game.load.image('loseScreen', 'assets/sprites/gameover.png');
+        game.load.image('winScreen', 'assets/sprites/youwin.png');
 
 
         // loadingMessage.text = "Loading Sprites ...";
