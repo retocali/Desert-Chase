@@ -15,8 +15,6 @@ var loadState = {
         
         // Buttons
         game.load.spritesheet('buttons', "assets/sprites/buttons/buttons.png", 200, 200, 8);
-        game.load.image('memoryBoard', 'assets/sprites/buttons/memory_board.jpg')
-        game.load.image('replayImage',"assets/sprites/buttons/button_restart.png");
         
         // Overlays
         game.load.image('gameOver', 'assets/sprites/menus/gameover.png');
@@ -28,7 +26,9 @@ var loadState = {
         loadingMessage.text = "Loading Sprites ...";
         
         // The sprites
-        game.load.image('memoryTile', 'assets/sprites/characters/puzzle.png');
+        game.load.image('car', 'assets/sprites/car.png');
+        game.load.image('truck', 'assets/sprites/truck.png');
+        game.load.image('obstacle', 'assets/sprites/obstacle.png');
 
     },
     create: function() {
