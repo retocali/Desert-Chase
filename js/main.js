@@ -34,7 +34,7 @@ function initializeGame() {
         
     }
     // Put the player onto the board
-    player = createSprite(START_X, START_Y, 'truck', TILE_SIZE, 2*TILE_SIZE)
+    player = createSprite(START_X, START_Y, 'truck', TILE_SIZE, 2*TILE_SIZE+MARGIN)
     player.pos = {x: START_X, y: START_Y};
     player.anchor.setTo(0.5,0.25)
     board[player.pos.x][player.pos.y] = PLAYER;
