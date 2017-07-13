@@ -11,13 +11,19 @@ var mainState = {
     },
     update: function() {
         if (movesDone == MOVES) {
+
             moveObstacles();
+            
             moveCars();
+
+            runEvent();
+            movesDone = 0;
+            player.input.enableDrag();
         }
 
     }
 };
-
+// Board inidices values
 var EMPTY = 0;
 var WALL = 1;
 var OBSTACLE = 2;
@@ -41,11 +47,9 @@ function initializeGame() {
         }
         
     }
-    makePlayer(START_X, START_Y);
+    makePlayer(START_X+0, START_Y+0);
 
     // Put the player onto the board
-    let xPos = START_X;
-    let yPos = START_Y;
     
     // Put the enemy right below the player
     makeEnemy(START_X, START_Y+3);
@@ -62,21 +66,20 @@ function makePlayer(xPos, yPos) {
     player.input.enableDrag();
     player.events.onDragStop.add(onDragStop, this);
     player.events.onDragStart.add(onDragStart, this);
-    
 }
 
 function makeEnemy(xPos, yPos) {
     board[xPos][yPos] = ENEMY;
     let enemy = createSprite(xPos, yPos, 'car');
-    enemy.pos = {x: xPos, yPos};
-    enemy.scale.y *= -1;
+    enemy.pos = {x: xPos, y: yPos};
+    //enemy.scale.y *= -1;
     cars.push(enemy);
 }
 
 function makeObstacle(xPos, yPos) {
     board[xPos][yPos] = OBSTACLE;
-    let obstacle = createSprite(xPos, yPos, 'obstacle', TILE_SIZE*3, TILE_SIZE);
-    obstacle.pos = {x: xPos, yPos};
+    let obstacle = createSprite(xPos, yPos, 'obstacle', TILE_SIZE*3+MARGIN*2, TILE_SIZE);
+    obstacle.pos = {x: xPos, y: yPos};
     obstacles.push(obstacle);
 }
 
@@ -84,7 +87,6 @@ function createSprite(x, y, sprite, sizeX = TILE_SIZE, sizeY = TILE_SIZE) {
     let customSprite = game.add.sprite(xLoc(x), yLoc(y), sprite);
     customSprite.anchor.setTo(0.5, 0.5);
     customSprite.scale.setTo(sizeX/customSprite.width, sizeY/customSprite.height);
-    console.log(customSprite.width, customSprite.height, sprite);
     return customSprite;
 }
 
@@ -95,43 +97,65 @@ function yLoc(y) {
     return game.world.centerY+TILE_SIZE * (y-BOARD_HEIGHT/2)+y*MARGIN;
 }
 
+function runEvent() {
+    if (Math.random() < SPAWN_CHANCE) {
+        makeObstacle(Math.floor(Math.random()*BOARD_WIDTH), 0);
+    } else {
+        makeEnemy(Math.floor(Math.random()*BOARD_WIDTH), BOARD_HEIGHT-1);
+    }
+}
+
+
 
 // Moving Methods
-var distance = 0;
+var distanceX = 0;
+var distanceY = 0;
 function onDragStart(sprite, pointer) {
-    distance = pointer.x;
+    distanceX = pointer.x;
+    distanceY = pointer.y;
 }
 function onDragStop(sprite, pointer) {
     if (movesDone < MOVES) {
-        if (pointer.x > distance) {
-            sprite.pos.x ++;
-        } else if (pointer.x < distance) {
-            sprite.pos.x --;
+        if (pointer.x > distanceX && sprite.pos.x < BOARD_WIDTH-1) {
+            sprite.pos.x++;
+            movesDone++;
+        } else if (pointer.x < distanceX && sprite.pos.x > 0) {
+            sprite.pos.x--;
+            movesDone++;
+        } else if (pointer.x-distanceX == 0){
+            movesDone++;
         }
-        positionObject(player);
-        movesDone++;
+        reposition(player);
     }
     if (movesDone == MOVES) {
         player.input.disableDrag();
     }
 }
 
-function positionObject(character) {
+function reposition(character) {
     character.x = xLoc(character.pos.x);
-    character.y = xLoc(character.pos.y);
+    character.y = yLoc(character.pos.y);
 }
 
 function moveObstacles() {
     for (var i = 0; i < obstacles.length; i++) {
-        var obstacle = obstacles[i];
-        obstacle.pos.x++;
+        let obstacle = obstacles[i];
+        obstacle.pos.y++;
+        if (obstacle.pos.y >= BOARD_HEIGHT) {
+            obstacle.destroy();
+        }
+        reposition(obstacle)
     }
 }
 
 function moveCars() {
     for (var i = 0; i < cars.length; i++) {
-        var car = cars[i];
-        car.pos.x++;
+        let car = cars[i];
+        car.pos.y--;
+        if (car.pos.y < 0) {
+            car.destroy();
+        }
+        reposition(car);
     }
 }
 
@@ -144,7 +168,5 @@ function level() {
 }
 
 function updateLevel() {
-
-	    levelText.setText("Level: " + LEVEL, 20);
-
+	levelText.setText("Level: " + LEVEL, 20);
 }
