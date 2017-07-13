@@ -11,8 +11,9 @@ var game = new Phaser.Game(gameX*scaleRatio, gameY*scaleRatio, Phaser.CANVAS);
 // Game Constants
 var BOARD_HEIGHT = 7;
 var BOARD_WIDTH  = 7;
-var START_X = 2;
+var START_X = 3;
 var START_Y = 3;
+var MOVES = 2;
 
 // UI Constants
 var TILE_SIZE = 100*scaleRatio;    

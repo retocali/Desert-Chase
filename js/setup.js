@@ -17,11 +17,6 @@ function makeBackground() {
 
 }
 
-function makePlayer() {
-
-    // Creates the player
-
-}
 
 // function makeUI() {
  

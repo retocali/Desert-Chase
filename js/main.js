@@ -9,7 +9,11 @@ var mainState = {
         initializeGame();
     },
     update: function() {
-                
+        if (movesDone == MOVES) {
+            moveObstacles();
+            moveCars();
+        }
+
     }
 };
 
@@ -19,7 +23,7 @@ var OBSTACLE = 2;
 var ENEMY = 3;
 var PLAYER = 4;
 
-
+var movesDone = 0;
 var board = [];
 var player;
 var cars = [];
@@ -36,25 +40,35 @@ function initializeGame() {
         }
         
     }
+    makePlayer(START_X, START_Y);
+
     // Put the player onto the board
-    player = createSprite(START_X, START_Y, 'truck', TILE_SIZE, 2*TILE_SIZE+MARGIN)
-    player.pos = {x: START_X, y: START_Y};
-    player.anchor.setTo(0.5,0.25)
-    board[player.pos.x][player.pos.y] = PLAYER;
-
+    let xPos = START_X;
+    let yPos = START_Y;
+    
     // Put the enemy right below the player
-    makeEnemy(player.pos.x, player.pos.y-2);
-
+    makeEnemy(START_X, START_Y+3);
 }
-
-function updateBoard() {
-
+// Creating Methods
+function makePlayer(xPos, yPos) {
+    // Put the player onto the board
+    player = createSprite(xPos, yPos, 'truck', TILE_SIZE, 2*TILE_SIZE+MARGIN);
+    player.pos = {x: xPos, y: yPos};
+    board[player.pos.x][player.pos.y] = PLAYER;
+    board[player.pos.x][player.pos.y+1] = PLAYER;
+    player.anchor.setTo(0.5,0.25);
+    player.inputEnabled = true;
+    player.input.enableDrag();
+    player.events.onDragStop.add(onDragStop, this);
+    player.events.onDragStart.add(onDragStart, this);
+    
 }
 
 function makeEnemy(xPos, yPos) {
     board[xPos][yPos] = ENEMY;
     let enemy = createSprite(xPos, yPos, 'car');
     enemy.pos = {x: xPos, yPos};
+    enemy.scale.y *= -1;
     cars.push(enemy);
 }
 
@@ -78,4 +92,48 @@ function xLoc(x) {
 }
 function yLoc(y) {
     return game.world.centerY+TILE_SIZE * (y-BOARD_HEIGHT/2)+y*MARGIN;
+}
+
+
+// Moving Methods
+var distance = 0;
+function onDragStart(sprite, pointer) {
+    distance = pointer.x;
+}
+function onDragStop(sprite, pointer) {
+    if (movesDone < MOVES) {
+        if (pointer.x > distance) {
+            sprite.pos.x ++;
+        } else if (pointer.x < distance) {
+            sprite.pos.x --;
+        }
+        positionObject(player);
+        movesDone++;
+    }
+    if (movesDone == MOVES) {
+        player.input.disableDrag();
+    }
+}
+
+function positionObject(character) {
+    character.x = xLoc(character.pos.x);
+    character.y = xLoc(character.pos.y);
+}
+
+function moveObstacles() {
+    for (var i = 0; i < obstacles.length; i++) {
+        var obstacle = obstacles[i];
+        obstacle.pos.x++;
+    }
+}
+
+function moveCars() {
+    for (var i = 0; i < cars.length; i++) {
+        var car = cars[i];
+        car.pos.x++;
+    }
+}
+
+function killPlayer() {
+
 }
