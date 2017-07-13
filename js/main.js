@@ -2,6 +2,7 @@ var mainState = {
     preload: function() {
 
     	makeBackground();
+    	level();
 
 
     },
@@ -78,4 +79,15 @@ function xLoc(x) {
 }
 function yLoc(y) {
     return game.world.centerY+TILE_SIZE * (y-BOARD_HEIGHT/2)+y*MARGIN;
+}
+
+function level() {
+    levelText = game.add.bitmapText(game.world.centerX, game.world.centerY + gameY/3, 'zigFont', "Level: " + LEVEL , 15);
+    levelText.tint = 0x0000f9;   
+}
+
+function updateLevel() {
+
+	    levelText.setText("Level: " + LEVEL, 20);
+
 }

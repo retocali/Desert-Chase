@@ -1,7 +1,7 @@
 var loadState = {
     preload: function() {
 
-    	// var loadingMessage = game.add.bitmapText(game.world.centerX, game.world.centerY, 'calibri   ', "Loading    ...", 24);
+        // var loadingMessage = game.add.bitmapText(game.world.centerX, game.world.centerY, 'zigFont', "Loading    ...", 24);
         // loadingMessage.anchor.setTo(0.5,0.5);
 
 
