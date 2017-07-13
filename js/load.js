@@ -13,7 +13,10 @@ var loadState = {
 
         loadingMessage.text = "Loading UI ...";
 
-        
+        //background image
+        game.load.image('gameOver', 'assets/sprites/menus/desertBackground.png');
+
+
         // Overlays
         game.load.image('gameOver', 'assets/sprites/menus/gameover.png');
         game.load.image('winScreen', 'assets/sprites/menus/youwin.png');
