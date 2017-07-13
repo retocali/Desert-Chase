@@ -27,6 +27,7 @@ var loadState = {
         
         // The sprites
         game.load.image('car', 'assets/sprites/car.png');
+        game.load.image('barrier', 'assets/sprites/barrier.png');
         game.load.image('truck', 'assets/sprites/truck.png');
         game.load.image('obstacle', 'assets/sprites/obstacle.png');
         game.load.image('desertTile', 'assets/sprites/desertTile.png');

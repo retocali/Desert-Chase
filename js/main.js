@@ -138,6 +138,7 @@ function moveCars() {
 function killPlayer() {
 
 }
+
 function level() {
     levelText = game.add.bitmapText(game.world.centerX, game.world.centerY + gameY/3, 'zigFont', "Level: " + LEVEL , 15);
     levelText.tint = 0x0000f9;   
@@ -147,4 +148,8 @@ function updateLevel() {
 
 	    levelText.setText("Level: " + LEVEL, 20);
 
+}
+
+function barrier() {
+	
 }
