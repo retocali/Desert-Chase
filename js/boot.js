@@ -5,6 +5,8 @@ var bootState = {
     create: function() {
 
         console.log("Booted!");
-        game.state.start('load');
+        // game.state.start('load');
+        game.state.start('menu');
+
     }
 };
