@@ -14,7 +14,7 @@ var BOARD_WIDTH  = 7;
 var START_X = 3;
 var START_Y = 3;
 var MOVES = 2;
-var SPAWN_CHANCE = 0.3; // Chance that a obstacle is spawned instead of a car
+var SPAWN_CHANCE = 0.2; // Chance that a obstacle is spawned instead of a car
 
 // Level
 var LEVEL = 1;
@@ -22,7 +22,7 @@ var levelText;
 
 // UI Constants
 var TILE_SIZE = 100*scaleRatio;    
-var MARGIN = 10*scaleRatio;
+var MARGIN = 2*scaleRatio;
 
 // Menu variables
 var credits;
