@@ -7,6 +7,14 @@ var mainState = {
     },
     create: function() {
         initializeGame();
+
+        // to go back to Menu
+        gameMenu = game.add.button(game.world.centerX + TILE_SIZE*3.3, game.world.centerY - gameY/5.5, 'menu', menuClick, this);
+        gameMenu.scale.setTo(0.125,0.125);
+
+        function menuClick() {
+            game.state.start('menu');
+        }   
     },
     update: function() {
         if (movesDone == MOVES) {
