@@ -4,10 +4,12 @@ var mainState = {
     	makeBackground();
     	level();
 
-
     },
     create: function() {
         initializeGame();
+        makeBarrier(0,0);
+        makeBarrier(6,0);
+
     },
     update: function() {
         if (movesDone == MOVES) {
@@ -15,6 +17,8 @@ var mainState = {
             moveObstacles();
             
             moveCars();
+
+            moveBarriers();
 
             runEvent();
             movesDone = 0;
@@ -25,7 +29,7 @@ var mainState = {
 };
 // Board inidices values
 var EMPTY = 0;
-var WALL = 1;
+var BARRIER = 1;
 var OBSTACLE = 2;
 var ENEMY = 3;
 var PLAYER = 4;
@@ -81,6 +85,19 @@ function makeObstacle(xPos, yPos) {
     let obstacle = createSprite(xPos, yPos, 'obstacle', TILE_SIZE*3+MARGIN*2, TILE_SIZE);
     obstacle.pos = {x: xPos, y: yPos};
     obstacles.push(obstacle);
+}
+
+function makeBarrier(xPos, yPos) {
+    board[xPos][yPos] = BARRIER;
+	let barrier = createSprite(xPos, yPos, 'barrier');
+    barrier.pos = {x: xPos, y: yPos};
+	
+}
+
+function moveBarriers() {
+    x++
+    y++
+    makeBarrier(x,y);
 }
 
 function createSprite(x, y, sprite, sizeX = TILE_SIZE, sizeY = TILE_SIZE) {
@@ -170,8 +187,4 @@ function level() {
 
 function updateLevel() {
 	levelText.setText("Level: " + LEVEL, 20);
-}
-
-function barrier() {
-	
 }
