@@ -20,6 +20,9 @@ var loadState = {
         game.load.image('instructionPage','assets/menu/instructionPage.png');
         game.load.image('creditPage', "assets/menu/creditPage.png");
 
+        // Menu Items on game screen
+        game.load.image('menu', "assets/menu/menu.png");
+
         //background image
         game.load.image('desertBackground', 'assets/sprites/desertBackground.png');
 
