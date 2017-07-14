@@ -7,8 +7,6 @@ var mainState = {
     },
     create: function() {
         initializeGame();
-        makeBarrier(0,0);
-        makeBarrier(6,0);
 
     },
     update: function() {
@@ -41,6 +39,7 @@ var board = [];
 var player;
 var cars = [];
 var obstacles = [];
+var barriers = [];
 
 function initializeGame() {
 
@@ -121,12 +120,25 @@ function makeBarrier(xPos, yPos) {
 	let barrier = createSprite(xPos, yPos, 'barrier');
     board[xPos][yPos] = [BARRIER, barrier];
     barrier.pos = {x: xPos, y: yPos};
+    barriers.push(barrier);
 }
 
+
 function moveBarriers() {
-    // x++
-    // y++
-    // makeBarrier(x,y);
+    let x = 0;
+    let z = 6;
+    let y = -1;
+    makeBarrier(x,y);
+    makeBarrier(z,y);
+
+    for (var i = 0; i < barriers.length; i++) {
+        let barrier = barriers[i];
+        barrier.pos.y++;
+        if (barrier.pos.y >= BOARD_HEIGHT) {
+            barrier.destroy();
+        }
+        reposition(barrier)
+    }
 }
 
 function createSprite(x, y, sprite, sizeX = TILE_SIZE, sizeY = TILE_SIZE) {
