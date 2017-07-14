@@ -21,13 +21,13 @@ var mainState = {
             
             detectCollisions();
 
-            movesDone = 0;
-            console.log("--------");
-            events.forEach(function(element) {
-                console.log(element);
+            [BARRIER, OBSTACLE, ENEMY].forEach(function(TYPE) {
+                if (collision(player, TYPE)[0]) {
+                    killPlayer(TYPE);
+                } 
             }, this);
-            console.log(cars.length, barriers.length, obstacles.length)
 
+            movesDone = 0;
             player.input.enableDrag();
         }
 
@@ -62,11 +62,17 @@ function updateBoard() {
             board[x][y] = [EMPTY, EMPTY];
         }   
     }
+
+    // Add Player
+    board[player.pos.x][player.pos.y] = [PLAYER, player];
+    board[player.pos.x][player.pos.y+1] = [PLAYER, player];
+    
     // Add cars
     for (var i = 0; i < cars.length; i++) {
         let car = cars[i];
         board[car.pos.x][car.pos.y] = [ENEMY, car];
     }
+
     // Add obstacles
     for (var i = 0; i < obstacles.length; i++) {
         let obstacle = obstacles[i];
@@ -74,14 +80,11 @@ function updateBoard() {
         board[obstacle.pos.x-1][obstacle.pos.y] = [OBSTACLE, obstacle];
         board[obstacle.pos.x+1][obstacle.pos.y] = [OBSTACLE, obstacle];
     }
-    // Add cars
+    // Add barrier
     for (var i = 0; i < barriers.length; i++) {
         let barrier = barriers[i];
         board[barrier.pos.x][barrier.pos.y] = [BARRIER, barrier];
     }
-    // Add Player
-    board[player.pos.x][player.pos.y] = [PLAYER, player];
-    board[player.pos.x][player.pos.y+1] = [PLAYER, player];
 }
 
 function runEvent() {
@@ -91,7 +94,9 @@ function runEvent() {
     } else if (event[0] == "CAR") {
         makeEnemy(Math.floor(Math.random()*BOARD_WIDTH), BOARD_HEIGHT-1);
     }
+    event[1].destroy();
     makeEvent(0);
+    updateEvents();
 }
 
 function detectCollisions() {
@@ -116,6 +121,7 @@ function detectCollisions() {
     }
     updateBoard();
 }
+
 
 // Creating Methods
 function initializeGame() {
@@ -220,10 +226,11 @@ function makeBarrier(xPos, yPos) {
 
 function makeEvent(i) {
     if (Math.random() < SPAWN_CHANCE) {
-        events.push(["OBSTACLE", createSprite(xLoc(BOARD_HEIGHT+2), i+1, 'obstacle')]);
-        
+        let event = createSprite(i+1, BOARD_HEIGHT+0.5, 'obstacle');
+        events.push(["OBSTACLE", event]);
     } else {
-        events.push(["CAR", createSprite(xLoc(BOARD_HEIGHT+2), i+1, 'car')]);
+        let event = createSprite(i+1, BOARD_HEIGHT+0.5, 'car');
+        events.push(["CAR", event]);
     }
 }
 
@@ -315,8 +322,8 @@ function collision(character, OBJECT) {
 }
 
 // Custom Phaser-based Functions
-function killPlayer() {
-    console.log("You're dead nerd!");
+function killPlayer(TYPE) {
+    console.log("You're dead, nerd!");
 }
 
 function killObject(object, objects) {
@@ -356,5 +363,8 @@ function updateLevel() {
 }
 
 function updateEvents() {
-
+    for (let i = 0; i < events.length; i++) {
+        let event = events[i];
+        event[1].x = xLoc(i+1)
+    }
 }
