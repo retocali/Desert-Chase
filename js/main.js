@@ -49,7 +49,7 @@ function initializeGame() {
         board[x] = [];
         for (let y = 0; y < BOARD_HEIGHT; y++) {
             let tile = createSprite(x, y, 'desertTile');
-            board[x][y] = (EMPTY, tile);
+            board[x][y] = [EMPTY, EMPTY];
         }
         
     }
@@ -65,22 +65,24 @@ function updateBoard() {
     // Assume the board is empty
     for (let x = 0; x < BOARD_WIDTH; x++) {
         for (let y = 0; y < BOARD_HEIGHT; y++) {
-            board[x][y] = EMPTY;
+            board[x][y] = [EMPTY, EMPTY];
         }   
     }
     // Add cars
     for (var i = 0; i < cars.length; i++) {
         let car = cars[i];
-        board[car.pos.x][car.pos.y] = (ENEMY, car);
+        board[car.pos.x][car.pos.y] = [ENEMY, car];
     }
     // Add obstacles
     for (var i = 0; i < obstacles.length; i++) {
         let obstacle = obstacles[i];
-        board[obstacle.pos.x][obstacle.pos.y] = (OBSTACLE, obstacle);
+        board[obstacle.pos.x][obstacle.pos.y] = [OBSTACLE, obstacle];
+        board[obstacle.pos.x-1][obstacle.pos.y] = [OBSTACLE, obstacle];
+        board[obstacle.pos.x+1][obstacle.pos.y] = [OBSTACLE, obstacle];
     }
     // Add Player
-    board[player.pos.x][player.pos.y] = (PLAYER, player);
-    board[player.pos.x][player.pos.y+1] = (PLAYER, player);
+    board[player.pos.x][player.pos.y] = [PLAYER, player];
+    board[player.pos.x][player.pos.y+1] = [PLAYER, player];
 }
 
 // Creating Methods
@@ -88,8 +90,8 @@ function makePlayer(xPos, yPos) {
     // Put the player onto the board
     player = createSprite(xPos, yPos, 'truck', TILE_SIZE, 2*TILE_SIZE+MARGIN);
     player.pos = {x: xPos, y: yPos};
-    board[player.pos.x][player.pos.y] = (PLAYER, player);
-    board[player.pos.x][player.pos.y+1] = (PLAYER, player);
+    board[player.pos.x][player.pos.y] = [PLAYER, player];
+    board[player.pos.x][player.pos.y+1] = [PLAYER, player];
     player.anchor.setTo(0.5,0.25);
     player.inputEnabled = true;
     player.input.enableDrag();
@@ -99,22 +101,25 @@ function makePlayer(xPos, yPos) {
 
 function makeEnemy(xPos, yPos) {
     let enemy = createSprite(xPos, yPos, 'car');
-    board[xPos][yPos] = (ENEMY, enemy);
+    board[xPos][yPos] = [ENEMY, enemy];
     enemy.pos = {x: xPos, y: yPos};
     enemy.scale.y *= -1;
     cars.push(enemy);
 }
 
 function makeObstacle(xPos, yPos) {
+    console.log(xPos, yPos);
     let obstacle = createSprite(xPos, yPos, 'obstacle', TILE_SIZE*3+MARGIN*2, TILE_SIZE);
-    board[xPos][yPos] = (OBSTACLE, obstacle);
+    board[xPos][yPos] = [OBSTACLE, obstacle];
+    board[xPos-1][yPos] = [OBSTACLE, obstacle];
+    board[xPos+1][yPos] = [OBSTACLE, obstacle];
     obstacle.pos = {x: xPos, y: yPos};
     obstacles.push(obstacle);
 }
 
 function makeBarrier(xPos, yPos) {
 	let barrier = createSprite(xPos, yPos, 'barrier');
-    board[xPos][yPos] = (BARRIER, barrier);
+    board[xPos][yPos] = [BARRIER, barrier];
     barrier.pos = {x: xPos, y: yPos};
 }
 
@@ -140,7 +145,7 @@ function yLoc(y) {
 
 function runEvent() {
     if (Math.random() < SPAWN_CHANCE) {
-        makeObstacle(Math.floor(Math.random()*BOARD_WIDTH), 0);
+        makeObstacle(Math.floor(Math.random()*(BOARD_WIDTH-2))+1, 0);
     } else {
         makeEnemy(Math.floor(Math.random()*BOARD_WIDTH), BOARD_HEIGHT-1);
     }
@@ -160,16 +165,34 @@ function onDragStop(sprite, pointer) {
     if (movesDone < MOVES) {
         if (pointer.x > distanceX && sprite.pos.x < BOARD_WIDTH-1) {
             sprite.pos.x++;
+            if (collisionPlayer(BARRIER) || collisionPlayer(OBSTACLE)) {
+                sprite.pos.x--;
+                reposition(player);
+                return;
+            }
+            if (collisionPlayer(ENEMY)) {
+                pushCarRight(x+1, y);
+                pushCarRight(x+1, y+1);
+            }
             movesDone++;
-            pushCarRight();
+            
         } else if (pointer.x < distanceX && sprite.pos.x > 0) {
             sprite.pos.x--;
+            if (collisionPlayer(BARRIER) || collisionPlayer(OBSTACLE)) {
+                sprite.pos.x++;
+                reposition(player);
+                return;
+            }
+            if (collisionPlayer(ENEMY)) {
+                pushCarLeft(x-1, y);
+                pushCarLeft(x-1, y+1);
+            }
             movesDone++;
-            pushCarLeft();
         } else if (pointer.x-distanceX == 0){
             movesDone++;
         }
         reposition(player);
+        updateBoard();
     }
     if (movesDone == MOVES) {
         player.input.disableDrag();
@@ -203,33 +226,25 @@ function moveCars() {
     }
 }
 
-function pushCarRight() {
-    for (var i = 0; i < cars.length; i++) {
-        let car = cars[i];
-        if (car.pos.x == player.pos.x && 
-        (car.pos.y == player.pos.y || car.pos.y == player.pos.y+1)
-        ) {
-            console.log('Right!');
-            car.pos.x = Math.min(++car.pos.x, BOARD_WIDTH-1);
-            reposition(car);
-        }
-        
-    }
-}
-function pushCarLeft() {
-    for (var i = 0; i < cars.length; i++) {
-        let car = cars[i];
-        if (car.pos.x == player.pos.x && 
-        (car.pos.y == player.pos.y || car.pos.y == player.pos.y+1)
-        ) {
-            console.log('Left!');
-            car.pos.x = Math.max(--car.pos.x, 0);
-            reposition(car);
-        }
-        
-    }
+function pushCarRight(x, y) {
+    if (board[x][y][0] != ENEMY) {return;}
+    let car = board[x][y][1];
+    car.pos.x = Math.min(++car.pos.x, BOARD_WIDTH-1);
+    reposition(car);
 }
 
+function pushCarLeft(x, y) {
+    if (board[x][y][0] != ENEMY) {return;}
+    let car = board[x][y][1];
+    car.pos.x = Math.max(--car.pos.x, 0);
+    reposition(car);
+}
+
+function collisionPlayer(OBJECT) {
+    let x = player.pos.x;
+    let y = player.pos.y;
+    return board[x][y][0] == OBJECT || board[x][y+1][0] == OBJECT;
+}
 function killPlayer() {
 
 }
