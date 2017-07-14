@@ -22,7 +22,7 @@ var levelText;
 
 // UI Constants
 var TILE_SIZE = 100*scaleRatio;    
-var MARGIN = 10*scaleRatio;
+var MARGIN = 2*scaleRatio;
 
 
 game.state.add('boot', bootState);
