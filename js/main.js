@@ -71,7 +71,7 @@ function updateBoard() {
     // Add cars
     for (var i = 0; i < cars.length; i++) {
         let car = cars[i];
-        board[car.pos.x][car.pos.y] = (CAR, car);
+        board[car.pos.x][car.pos.y] = (ENEMY, car);
     }
     // Add obstacles
     for (var i = 0; i < obstacles.length; i++) {
@@ -113,16 +113,15 @@ function makeObstacle(xPos, yPos) {
 }
 
 function makeBarrier(xPos, yPos) {
-    board[xPos][yPos] = BARRIER;
 	let barrier = createSprite(xPos, yPos, 'barrier');
+    board[xPos][yPos] = (BARRIER, barrier);
     barrier.pos = {x: xPos, y: yPos};
-	
 }
 
 function moveBarriers() {
-    x++
-    y++
-    makeBarrier(x,y);
+    // x++
+    // y++
+    // makeBarrier(x,y);
 }
 
 function createSprite(x, y, sprite, sizeX = TILE_SIZE, sizeY = TILE_SIZE) {
@@ -160,16 +159,10 @@ function onDragStop(sprite, pointer) {
     let y = sprite.pos.y;
     if (movesDone < MOVES) {
         if (pointer.x > distanceX && sprite.pos.x < BOARD_WIDTH-1) {
-            if (board[x+1][y] == CAR || board[x+1][y+1] == CAR) {
-                pushCarRight();
-            }
             sprite.pos.x++;
             movesDone++;
-            
+            pushCarRight();
         } else if (pointer.x < distanceX && sprite.pos.x > 0) {
-            if (board[x-1][y] == CAR || board[x-1][y+1] == CAR) {
-                pushCarLeft();
-            }
             sprite.pos.x--;
             movesDone++;
             pushCarLeft();
