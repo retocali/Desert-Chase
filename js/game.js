@@ -1,5 +1,5 @@
 var gameX = 900;
-var gameY = 900;
+var gameY = 1100;
 var canvas_x = window.innerWidth;
 var canvas_y = window.innerHeight;
 var scaleRatio = Math.min(canvas_x/gameX, canvas_y/gameY);

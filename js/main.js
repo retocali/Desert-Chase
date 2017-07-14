@@ -7,9 +7,6 @@ var mainState = {
     },
     create: function() {
         initializeGame();
-        events.forEach(function(element) {
-            console.log(element);
-        }, this);
     },
     update: function() {
         if (movesDone == MOVES) {
@@ -89,12 +86,12 @@ function updateBoard() {
 
 function runEvent() {
     var event = events.shift();
-    if (event == "OBSTACLE") {
+    if (event[0] == "OBSTACLE") {
         makeObstacle(Math.floor(Math.random()*(BOARD_WIDTH-2))+1, 0);
-    } else if (event == "CAR") {
+    } else if (event[0] == "CAR") {
         makeEnemy(Math.floor(Math.random()*BOARD_WIDTH), BOARD_HEIGHT-1);
     }
-    makeEvent();
+    makeEvent(0);
 }
 
 function detectCollisions() {
@@ -138,7 +135,7 @@ function initializeGame() {
     makeEnemy(START_X, START_Y+3);
 
     for (let i = 0; i < EVENTS_SHOWN; i++) {
-        makeEvent();
+        makeEvent(i);
     }
 }
 
@@ -221,11 +218,12 @@ function makeBarrier(xPos, yPos) {
     barriers.push(barrier);
 }
 
-function makeEvent() {
+function makeEvent(i) {
     if (Math.random() < SPAWN_CHANCE) {
-        events.push("OBSTACLE");
+        events.push(["OBSTACLE", createSprite(xLoc(BOARD_HEIGHT+2), i+1, 'obstacle')]);
+        
     } else {
-        events.push("CAR");
+        events.push(["CAR", createSprite(xLoc(BOARD_HEIGHT+2), i+1, 'car')]);
     }
 }
 
@@ -340,11 +338,11 @@ function createSprite(x, y, sprite, sizeX = TILE_SIZE, sizeY = TILE_SIZE) {
 }
 
 function xLoc(x) {
-    return game.world.centerX+TILE_SIZE * (x-BOARD_WIDTH/2)+x*MARGIN;
+    return game.world.centerX+TILE_SIZE * (x-Math.floor(BOARD_WIDTH/2))+x*MARGIN;
 }
 
 function yLoc(y) {
-    return game.world.centerY+TILE_SIZE * (y-BOARD_HEIGHT/2)+y*MARGIN;
+    return game.world.centerY+TILE_SIZE * (y-Math.floor(BOARD_HEIGHT/2))+y*MARGIN;
 }
 
 // UI Functions
@@ -355,4 +353,8 @@ function level() {
 
 function updateLevel() {
 	levelText.setText("Level: " + LEVEL, 20);
+}
+
+function updateEvents() {
+
 }
