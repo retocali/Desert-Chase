@@ -36,6 +36,7 @@ game.state.add('main', mainState);
 game.state.add('setup',setupState);
 game.state.add('menu', menuState);
 game.state.add('credit', creditState);
+game.state.add('instruction',instructionState);
 
 game.state.start('boot');
 
