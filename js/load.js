@@ -14,6 +14,13 @@ var loadState = {
 
         // loadingMessage.text = "Loading UI ...";
 
+        // Menu Items
+        game.load.image('start', "assets/menu/start.png");
+        game.load.image('instruction', "assets/menu/instruction.png");
+        game.load.image('credit', "assets/menu/credit.png");
+        game.load.image('instructionPage','assets/menu/instructionPage.png');
+        game.load.image('creditPage', "assets/menu/creditPage.png");
+
         //background image
         game.load.image('desertBackground', 'assets/sprites/desertBackground.png');
 

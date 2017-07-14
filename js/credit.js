@@ -1,0 +1,8 @@
+var creditState = {
+
+	create: function() {
+
+
+	}
+	
+}

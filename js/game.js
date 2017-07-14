@@ -24,11 +24,19 @@ var levelText;
 var TILE_SIZE = 100*scaleRatio;    
 var MARGIN = 10*scaleRatio;
 
+// Menu variables
+var credits;
+var instruction;
+var gameStart;
 
 game.state.add('boot', bootState);
 game.state.add('load', loadState);
 game.state.add('main', mainState);
 game.state.add('setup',setupState);
 game.state.add('menu', menuState);
+game.state.add('credit', creditState);
 
 game.state.start('boot');
+
+//credits is for the images and stuff
+//credit is for the credit.js file
