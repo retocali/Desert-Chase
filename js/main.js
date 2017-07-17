@@ -39,6 +39,7 @@ var mainState = {
     },
     update: function() {
         if (movesDone == MOVES) {
+            count++;
 
             moveBarriers();
 
@@ -46,7 +47,11 @@ var mainState = {
 
             moveCars();
             
-            runEvent();
+            if (count == 2) {
+                runEvent();
+                count = 0;
+            }
+            
             
             detectCollisions();
 
@@ -68,11 +73,14 @@ var ENEMY = 3;
 var PLAYER = 4;
 
 // Directions 
+var UP = -1;
+var DOWN = 1;
 var LEFT = -1;
 var RIGHT = 1;
 var distanceX = 0;
 var distanceY = 0;
 var currentBarrierWidth = 1;
+var count = 0;
 
 var movesDone = 0;
 var board = [];
@@ -208,16 +216,27 @@ function makePlayer(xPos, yPos) {
     }
 
     function onDragStop(sprite, pointer) {
-        let x = sprite.pos.x;
-        let y = sprite.pos.y;
+        let x = pointer.x - distanceX;
+        let y = pointer.y - distanceY;
         click = game.add.audio('click', volume);
         click.play();
+    
         if (movesDone < MOVES) {
-            if (pointer.x > distanceX && sprite.pos.x < BOARD_WIDTH-1) {
-                movePlayer(RIGHT)
-            } else if (pointer.x < distanceX && sprite.pos.x > 0) {
-                movePlayer(LEFT)
-            } else if (pointer.x-distanceX == 0){
+            if (Math.abs(x) > Math.abs(y)) { //Horizontal move
+                if (x > 0 && sprite.pos.x < BOARD_WIDTH-1) {
+                    movePlayer(RIGHT)
+                } else if (x < 0 && sprite.pos.x > 0) {
+                    movePlayer(LEFT)
+                }
+                reposition(player);
+            } else if (Math.abs(x) < Math.abs(y)) {
+                if (y > 0 && sprite.pos.y > 0 && movesDone == 0) {
+                    verticalMove(DOWN)
+                } else if (y < 0 && sprite.pos.y < BOARD_HEIGHT-1 && movesDone == 0) {
+                    verticalMove(UP)
+                }
+                reposition(player);
+            } else if (x == 0 && y == 0){
                 movesDone++;
             }
             reposition(player);
@@ -358,6 +377,16 @@ function movePlayer(direction) {
         pushCar(player.pos.x, player.pos.y+1, direction);
     }
     movesDone++;
+}
+
+function verticalMove(direction) {
+    player.pos.y += direction;
+    if (collision(player,BARRIER)[0] || collision(player,OBSTACLE)[0]) {
+        player.pos.x -= direction;
+        reposition(player);
+        return;
+    }
+    movesDone += 2;
 }
 
 function pushCar(x, y, direction) {
