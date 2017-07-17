@@ -1,5 +1,5 @@
 var gameX = 900;
-var gameY = 1100;
+var gameY = 1300;
 var canvas_x = window.innerWidth;
 var canvas_y = window.innerHeight;
 var scaleRatio = Math.min(canvas_x/gameX, canvas_y/gameY);
@@ -10,12 +10,12 @@ var game = new Phaser.Game(gameX*scaleRatio, gameY*scaleRatio, Phaser.CANVAS);
 
 // Game Constants
 var BOARD_HEIGHT = 7;
-var BOARD_WIDTH  = 7;
-var START_X = 3;
-var START_Y = 3;
+var BOARD_WIDTH  = 9;
+var START_X = Math.floor(BOARD_WIDTH/2);
+var START_Y = Math.floor(BOARD_HEIGHT/2);
 var MOVES = 2; 
-var SPAWN_CHANCE = 0.7; // Chance that something is spawned
-var OBSTACLE_SPAWN = 0.3; // Chance that a obstacle is spawned instead of a car
+var SPAWN_CHANCE = 0.75; // Chance that something is spawned
+var OBSTACLE_SPAWN = 0.25; // Chance that a obstacle is spawned instead of a car
 var EVENTS_SHOWN = 5;
 
 // Level
