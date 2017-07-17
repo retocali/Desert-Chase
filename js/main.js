@@ -34,11 +34,9 @@ var mainState = {
                     killPlayer(TYPE);
                 } 
             }, this);
-
             movesDone = 0;
             player.input.enableDrag();
         }
-
     }
 };
 // Board inidices values
@@ -53,6 +51,7 @@ var LEFT = -1;
 var RIGHT = 1;
 var distanceX = 0;
 var distanceY = 0;
+var currentBarrierWidth = 1;
 
 var movesDone = 0;
 var board = [];
@@ -97,10 +96,21 @@ function updateBoard() {
 
 function runEvent() {
     var event = events.shift();
-    if (event[0] == "OBSTACLE") {
-        makeObstacle(Math.floor(Math.random()*(BOARD_WIDTH-2))+1, 0);
-    } else if (event[0] == "CAR") {
-        makeEnemy(Math.floor(Math.random()*BOARD_WIDTH), BOARD_HEIGHT-1);
+    switch (event[0]) {
+        case "OBSTACLE":
+            makeObstacle(Math.floor(Math.random()*(BOARD_WIDTH-2))+1, 0);
+            break;
+        case "CAR":
+            makeEnemy(Math.floor(Math.random()*BOARD_WIDTH), BOARD_HEIGHT-1);
+            break;
+        case "SHRINK":
+            currentBarrierWidth = Math.max(0, --currentBarrierWidth);
+            break;
+        case "GROW":
+            currentBarrierWidth = Math.min(Math.floor(BOARD_WIDTH/2)-1, ++currentBarrierWidth); 
+            break;
+        default:
+            break;
     }
     event[1].destroy();
     makeEvent(0);
@@ -208,6 +218,7 @@ function makeEnemy(xPos, yPos) {
 }
 
 function makeObstacle(xPos, yPos) {
+    console.log(xPos, yPos)
     let obstacle = createSprite(xPos, yPos, 'obstacle', TILE_SIZE*3+MARGIN*2, TILE_SIZE);
     
     obstacle.gameWidth = 3;
@@ -233,55 +244,79 @@ function makeBarrier(xPos, yPos) {
 }
 
 function makeEvent(i) {
-    if (Math.random() < SPAWN_CHANCE) {
-        let event = createSprite(i+1, BOARD_HEIGHT+0.5, 'obstacle');
-        events.push(["OBSTACLE", event]);
+    var num = Math.random();
+    if (num < SPAWN_CHANCE) {
+        if (num < OBSTACLE_SPAWN) {
+            let event = createSprite(i+1, BOARD_HEIGHT+0.5, 'obstacle');
+            events.push(["OBSTACLE", event]);
+        } else {
+            let event = createSprite(i+1, BOARD_HEIGHT+0.5, 'car');
+            events.push(["CAR", event]);
+        }
     } else {
-        let event = createSprite(i+1, BOARD_HEIGHT+0.5, 'car');
-        events.push(["CAR", event]);
+        if (Math.random() < 0.5) {
+            let event = createSprite(i+1, BOARD_HEIGHT+0.5, 'barrier');
+            events.push(["GROW", event])
+        } else {
+            let event = createSprite(i+1, BOARD_HEIGHT+0.5, 'barrier');
+            events.push(["SHRINK", event])
+        }
     }
 }
 
 
 // Moving Methods
 function moveBarriers() {
-    let x = 0;
-    let z = 6;
-    let y = -1;
-    makeBarrier(x,y);
-    makeBarrier(z,y);
-
+    let x1 = 0;
+    let x2 = BOARD_WIDTH-1;
+    let y = 0;
+    var dead_barriers = []
     for (var i = 0; i < barriers.length; i++) {
         let barrier = barriers[i];
         barrier.pos.y++;
+        reposition(barrier);
         if (barrier.pos.y >= BOARD_HEIGHT) {
-            killObject(barrier, barriers)
+            dead_barriers.push(barrier);
         }
-        reposition(barrier)
     }
-    detectCollisions();
+    for (var i  = 0; i < dead_barriers.length; i++) {
+        killObject(dead_barriers[i], barriers);    
+    }
+    
+    makeBarrier(x1+currentBarrierWidth,y);
+    makeBarrier(x2-currentBarrierWidth,y);    
+
+    //detectCollisions();
 }
 
 function moveObstacles() {
+    var dead_obstacles = [];
     for (var i = 0; i < obstacles.length; i++) {
         let obstacle = obstacles[i];
         obstacle.pos.y++;
         reposition(obstacle)
         if (obstacle.pos.y >= BOARD_HEIGHT) {
-            killObject(obstacle, obstacles)
+            dead_obstacles.push(obstacle);
         }
+    }
+    for (var i = 0; i < dead_obstacles.length; i++) {
+        killObject(dead_obstacles[i], obstacles);
     }
     detectCollisions();
 }
 
 function moveCars() {
+    var dead_cars = []
     for (var i = 0; i < cars.length; i++) {
         let car = cars[i];
         car.pos.y--;
         reposition(car);
         if (car.pos.y < 0) {
-            killObject(car, cars);
+            dead_cars.push(car);
         }       
+    }
+    for (var i = 0; i < dead_cars.length; i++) {
+        killObject(dead_cars[i], cars);
     }
     detectCollisions();
 }
@@ -331,13 +366,12 @@ function collision(character, OBJECT) {
 
 // Custom Phaser-based Functions
 function killPlayer(TYPE) {
-    console.log("You're dead, nerd!");
 }
+
 
 function killObject(object, objects) {
     objects.splice(objects.indexOf(object), 1);
     object.destroy();
-    delete object;
 }
 
 function reposition(character) {
