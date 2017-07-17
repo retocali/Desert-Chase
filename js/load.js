@@ -22,6 +22,9 @@ var loadState = {
 
         // Menu Items on game screen
         game.load.image('menu', "assets/menu/menu.png");
+        game.load.image('mute', "assets/sprites/mute.png");
+        game.load.image('muted', "assets/sprites/mute2.png");
+
 
         //background image
         game.load.image('desertBackground', 'assets/sprites/desertBackground.png');
@@ -31,6 +34,11 @@ var loadState = {
         game.load.image('loseScreen', 'assets/sprites/gameover.png');
         game.load.image('winScreen', 'assets/sprites/youwin.png');
 
+        // Audio; drop the beat; Used to load the background music, game over and win sounds, and UI sounds
+	    game.load.audio('bgm', 'assets/sounds/PuzzleTheme1.wav');
+	    game.load.audio('click', 'assets/sounds/click1.wav');
+	    game.load.audio('win', 'assets/sounds/win.mp3');
+	    game.load.audio('lose', 'assets/sounds/gameover.wav');
 
         // loadingMessage.text = "Loading Sprites ...";
         

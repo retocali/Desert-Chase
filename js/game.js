@@ -31,6 +31,11 @@ var credits;
 var instruction;
 var gameStart;
 
+// Sounds
+var backgroundMusic;
+var volume = 1;
+var click;
+
 game.state.add('boot', bootState);
 game.state.add('load', loadState);
 game.state.add('main', mainState);
@@ -38,6 +43,8 @@ game.state.add('setup',setupState);
 game.state.add('menu', menuState);
 game.state.add('credit', creditState);
 game.state.add('instruction',instructionState);
+game.state.add('win',winState);
+game.state.add('lose',loseState);
 
 game.state.start('boot');
 

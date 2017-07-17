@@ -13,8 +13,29 @@ var mainState = {
         gameMenu.scale.setTo(0.125,0.125);
 
         function menuClick() {
+            backgroundMusic.stop();
             game.state.start('menu');
         }   
+
+        function muteClick() {
+            if (volume) {
+                backgroundMusic.stop();
+                muted.visible = true;
+                muted.bringToTop();
+            } else {
+                backgroundMusic.play();
+                muted.visible = false;
+            }
+            volume = !volume;
+        }
+
+        // Mute button
+        muted = game.add.button(game.world.centerX + TILE_SIZE*3.5, game.world.centerY - gameY/4, 'muted', muteClick, this);
+        muted.scale.setTo(0.3,0.3);
+
+        mute = game.add.button(game.world.centerX + TILE_SIZE*3.5, game.world.centerY - gameY/4, 'mute', muteClick, this);
+        mute.scale.setTo(0.3,0.3);
+
     },
     update: function() {
         if (movesDone == MOVES) {
@@ -188,6 +209,8 @@ function makePlayer(xPos, yPos) {
     function onDragStop(sprite, pointer) {
         let x = sprite.pos.x;
         let y = sprite.pos.y;
+        click = game.add.audio('click', volume);
+        click.play();
         if (movesDone < MOVES) {
             if (pointer.x > distanceX && sprite.pos.x < BOARD_WIDTH-1) {
                 movePlayer(RIGHT)
