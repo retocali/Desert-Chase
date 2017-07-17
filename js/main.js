@@ -230,9 +230,9 @@ function makePlayer(xPos, yPos) {
                 }
                 reposition(player);
             } else if (Math.abs(x) < Math.abs(y)) {
-                if (y > 0 && sprite.pos.y > 0 && movesDone == 0) {
+                if (y > 0 && sprite.pos.y < BOARD_HEIGHT-1 && movesDone == 0) {
                     verticalMove(DOWN)
-                } else if (y < 0 && sprite.pos.y < BOARD_HEIGHT-1 && movesDone == 0) {
+                } else if (y < 0 && sprite.pos.y > 0 && movesDone == 0) {
                     verticalMove(UP)
                 }
                 reposition(player);
