@@ -8,6 +8,9 @@ var desertBackground;
 
 var game = new Phaser.Game(gameX*scaleRatio, gameY*scaleRatio, Phaser.CANVAS);
 
+
+
+
 // Game Constants
 var BOARD_HEIGHT = 7;
 var BOARD_WIDTH  = 9;
