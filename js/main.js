@@ -282,10 +282,11 @@ function moveBarriers() {
     for (var i  = 0; i < dead_barriers.length; i++) {
         killObject(dead_barriers[i], barriers);    
     }
+    for (var i = 0; i < currentBarrierWidth; i++) {
+        makeBarrier(x1+i,y);
+        makeBarrier(x2-i,y);    
+    }
     
-    makeBarrier(x1+currentBarrierWidth,y);
-    makeBarrier(x2-currentBarrierWidth,y);    
-
     //detectCollisions();
 }
 
@@ -344,6 +345,7 @@ function pushCar(x, y, direction) {
         car.pos.x = Math.min(++car.pos.x, BOARD_WIDTH-1);
     }
     reposition(car);
+    detectCollisions();
 }
 
 function collision(character, OBJECT) {
