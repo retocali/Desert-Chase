@@ -23,6 +23,7 @@ var loadState = {
         // Menu Items on game screen
         game.load.image('menu', "assets/menu/menu.png");
         game.load.image('mute', "assets/sprites/mute.png");
+        game.load.image('muted', "assets/sprites/mute2.png");
 
 
         //background image
