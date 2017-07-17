@@ -8,6 +8,10 @@ var mainState = {
     create: function() {
         initializeGame();
 
+        if (backgroundMusic.play() == true) {
+            backgroundMusic.stop();
+        }
+
         // to go back to Menu
         gameMenu = game.add.button(game.world.centerX + TILE_SIZE*3.3, game.world.centerY - gameY/5.5, 'menu', menuClick, this);
         gameMenu.scale.setTo(0.125,0.125);
@@ -165,6 +169,7 @@ function detectCollisions() {
 // Creating Methods
 function initializeGame() {
 
+    backgroundMusic.play();
     // Initialize the board as empty
     for (let x = 0; x < BOARD_WIDTH; x++) {
         board[x] = [];
