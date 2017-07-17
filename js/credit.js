@@ -10,7 +10,7 @@ var creditState = {
 		game.input.onDown.add(click, this);
 
 		function click() {
-
+			backgroundMusic.stop();
 			game.state.start("menu");
 
 		}

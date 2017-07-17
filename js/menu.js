@@ -1,8 +1,9 @@
 var menuState = {
 
 	create: function() {
+		
+	click = game.add.audio('click', volume);
 
-	var volume = 1;
 	var nameLabel = game.add.text(game.world.centerX - gameX/5,game.world.centerY - gameY/3.7 ,"Road Warrior", {font: "64px Arial", fill: "#0ff0ff"});
 	console.log("Menued...");
 
@@ -18,19 +19,36 @@ var menuState = {
 	credit = game.add.button(game.world.centerX, game.world.centerY, 'instruction', instructionClick, this)
 	gameStart.scale.setTo(0.25,0.25);
 
-	// BGM
-	backgroundMusic = game.add.audio('bgm', volume, true);
-    backgroundMusic.play();
-    
+    // BGM
+    backgroundMusic = game.add.audio('bgm', volume, true);
+	backgroundMusic.play();
+
+	// Win/Lose Music
+    winSound = game.add.audio('win', volume, true);
+    loseSound = game.add.audio('lose', volume, true);
+
+    function winMusic() {
+    	winSound.play();
+    	return;
+	}
+
+	function loseMusic() {
+		loseSound.play();
+		return;
+	}
+
 	function startClick() {
+    	click.play();
 		game.state.start('main');
 	}	
 
 	function creditClick() {
+		click.play();
 		game.state.start('credit');
 	}
 
 	function instructionClick() {
+		click.play();
 		game.state.start('instruction');
 	}
 
