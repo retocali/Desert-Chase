@@ -21,21 +21,12 @@ var menuState = {
 
     // BGM
     backgroundMusic = game.add.audio('bgm', volume, true);
-	backgroundMusic.play();
+    
 
-	// Win/Lose Music
-    winSound = game.add.audio('win', volume, true);
-    loseSound = game.add.audio('lose', volume, true);
+    // Win/Lose Music
+	winSound = game.add.audio('win', volume, true);
+	loseSound = game.add.audio('lose', volume, true);
 
-    function winMusic() {
-    	winSound.play();
-    	return;
-	}
-
-	function loseMusic() {
-		loseSound.play();
-		return;
-	}
 
 	function startClick() {
     	click.play();

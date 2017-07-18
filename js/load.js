@@ -49,6 +49,7 @@ var loadState = {
         game.load.image('obstacle', 'assets/sprites/obstacle.png');
         game.load.image('desertTile', 'assets/sprites/desertTile.png');
 
+
     },
     create: function() {
         console.log("Loaded!");

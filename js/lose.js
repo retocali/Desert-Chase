@@ -14,6 +14,11 @@ var loseState = {
 		function loseClick() {
 			game.state.start('menu');
 		}	
+		
+		function loseMusic() {
+			loseSound.play();
+			return;
+		}
 
     }
 };

@@ -15,5 +15,10 @@ var winState = {
 			game.state.start('menu');
 		}	
 
+	    function winMusic() {
+	    	winSound.play();
+	    	return;
+		}
+	
     }
 };

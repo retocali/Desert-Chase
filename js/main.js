@@ -13,28 +13,51 @@ var mainState = {
         gameMenu.scale.setTo(0.125,0.125);
 
         function menuClick() {
-            backgroundMusic.stop();
+        	if (sound == true) {
+	            backgroundMusic.stop();
+	        }
             game.state.start('menu');
         }   
 
         function muteClick() {
+            
+            
             if (volume) {
                 backgroundMusic.stop();
                 muted.visible = true;
                 muted.bringToTop();
+                sound = false;
+                mute.visible = false;
+                muted.visible = true;
+                console.log("music");
             } else {
                 backgroundMusic.play();
                 muted.visible = false;
+                mute.visible = true;
+                sound = true;
+				console.log("what!!");
+
             }
             volume = !volume;
         }
 
-        // Mute button
-        muted = game.add.button(game.world.centerX + TILE_SIZE*3.5, game.world.centerY - gameY/4, 'muted', muteClick, this);
-        muted.scale.setTo(0.3,0.3);
+        if (sound) {
 
-        mute = game.add.button(game.world.centerX + TILE_SIZE*3.5, game.world.centerY - gameY/4, 'mute', muteClick, this);
-        mute.scale.setTo(0.3,0.3);
+	        muted = game.add.button(game.world.centerX + TILE_SIZE*3.5, game.world.centerY - gameY/4, 'muted', muteClick, this);
+	        muted.scale.setTo(0.3,0.3);
+
+	        mute = game.add.button(game.world.centerX + TILE_SIZE*3.5, game.world.centerY - gameY/4, 'mute', muteClick, this);
+	        mute.scale.setTo(0.3,0.3);
+
+        } else {
+
+	        mute = game.add.button(game.world.centerX + TILE_SIZE*3.5, game.world.centerY - gameY/4, 'mute', muteClick, this);
+	        mute.scale.setTo(0.3,0.3);
+
+	        muted = game.add.button(game.world.centerX + TILE_SIZE*3.5, game.world.centerY - gameY/4, 'muted', muteClick, this);
+	        muted.scale.setTo(0.3,0.3);
+
+    	}
 
     },
     update: function() {
