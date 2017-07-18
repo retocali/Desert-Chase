@@ -79,7 +79,7 @@ var mainState = {
         }
     },
     render: function() {
-        game.debug.text("Time until event: " + game.time.events.duration, 32, 32)
+        // game.debug.text("Time until event: " + game.time.events.duration, 32, 32)
     }
 };
 // Board inidices values
@@ -475,7 +475,7 @@ function collision(character, OBJECT) {
 
 // Custom Phaser-based Functions
 function killPlayer(TYPE) {
-	let explosion = createSprite(player.pos.x, player.pos.y, 'explosion', TILE_SIZE, 2*TILE_SIZE+MARGIN);
+	let explosion = createSprite(player.pos.x, player.pos.y, 'explosion', 2*TILE_SIZE, 2*TILE_SIZE);
 	explosionSound = game.add.audio('explosionSound', volume, true);
 	explosionSound.play("",0,1,false);
 	game.time.events.add(Phaser.Timer.SECOND, function() { game.state.start('lose');}, this);
