@@ -461,10 +461,11 @@ function collision(character, OBJECT) {
 // Custom Phaser-based Functions
 function killPlayer(TYPE) {
 	let explosion = createSprite(player.pos.x, player.pos.y, 'explosion', TILE_SIZE, 2*TILE_SIZE+MARGIN);
-	explosionSound = game.add.audio('explosionSound', volume, false);
-	explosionSound.play();
+	explosionSound = game.add.audio('explosionSound', volume, true);
+	explosionSound.play("",0,1,false);
+	game.time.events.add(Phaser.Timer.SECOND, function() { game.state.start('lose');}, this);
 	// add some type of delay here
-    game.state.start('lose');
+    
 }
 
 function killObject(object, objects) {
