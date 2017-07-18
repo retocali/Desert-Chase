@@ -193,8 +193,8 @@ function detectCollisions() {
         }
 
         if (crashed) {
-        	let crash = createSprite(car.pos.x, car.pos.y, 'explosion', TILE_SIZE, TILE_SIZE);
-        	crash.lifespan = 1000;
+        	let crash = createSprite(car.pos.x, car.pos.y, 'explosion', 1.5*TILE_SIZE, 1.5*TILE_SIZE);
+        	crash.lifespan = 500;
 			crashSound = game.add.audio('crash', volume, true);
 			crashSound.play("",0,1,false);
 
