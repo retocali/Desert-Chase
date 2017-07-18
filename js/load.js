@@ -49,7 +49,7 @@ var loadState = {
         game.load.image('truck', 'assets/sprites/truck.png');
         game.load.image('obstacle', 'assets/sprites/obstacle.png');
         game.load.image('desertTile', 'assets/sprites/desertTile.png');
-        game.lod.image('explosionSound', 'assets/sprites/explosion.png');
+        game.load.image('explosionSound', 'assets/sprites/explosion.png');
 
 
     },

@@ -57,7 +57,7 @@ var mainState = {
 
     },
     update: function() {
-        desertBackground.tilePosition.y += 1;
+        desertBackground.tilePosition.y += 5;
         if (movesDone == MOVES) {
             eventCount++;
 

@@ -27,7 +27,7 @@ var levelText;
 
 // UI Constants
 var TILE_SIZE = 100*scaleRatio;    
-var MARGIN = 2*scaleRatio;
+var MARGIN = 0*scaleRatio;
 
 // Menu variables
 var credits;
