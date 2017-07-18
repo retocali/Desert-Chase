@@ -39,6 +39,7 @@ var loadState = {
 	    game.load.audio('click', 'assets/sounds/click1.wav');
 	    game.load.audio('win', 'assets/sounds/win.mp3');
 	    game.load.audio('lose', 'assets/sounds/gameover.wav');
+	    game.load.audio('explosion', 'assets/sounds/explosion.wav');
 
         // loadingMessage.text = "Loading Sprites ...";
         
@@ -48,6 +49,7 @@ var loadState = {
         game.load.image('truck', 'assets/sprites/truck.png');
         game.load.image('obstacle', 'assets/sprites/obstacle.png');
         game.load.image('desertTile', 'assets/sprites/desertTile.png');
+        game.lod.image('explosionSound', 'assets/sprites/explosion.png');
 
 
     },
