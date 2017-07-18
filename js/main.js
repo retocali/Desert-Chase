@@ -79,7 +79,7 @@ var mainState = {
         }
     },
     render: function() {
-        game.debug.text("Time until event: " + game.time.events.duration, 32, 32)
+        // game.debug.text("Time until event: " + game.time.events.duration, 32, 32)
     }
 };
 // Board inidices values
@@ -98,7 +98,7 @@ var distanceX = 0;
 var distanceY = 0;
 var currentBarrierWidth = 1;
 var eventCount = 0;
-var TIME_GAP = Phaser.Timer.QUARTER/2;
+var TIME_GAP = Phaser.Timer.QUARTER/5;
 
 var movesDone = 0;
 var board = [];
@@ -170,23 +170,38 @@ function detectCollisions() {
     // Check Collision
     updateBoard();
     for (var i = 0; i < cars.length; i++) {
+    	let crashed = false;
         let car = cars[i];
         var collider = collision(car, ENEMY);
         if (collider[0] && collider[1] != car) {
             killObject(car, cars);
             killObject(collider[1], cars)
+            crashed = true;
         }
         var collider = collision(car, OBSTACLE)
         if (collider[0]) {
             killObject(car, cars);
             killObject(collider[1], obstacles)
+			crashed = true;
+
         }
         var collider = collision(car, BARRIER)
         if (collider[0]) {
             killObject(car, cars);
+			crashed = true;
+
+        }
+
+        if (crashed) {
+        	let crash = createSprite(car.pos.x, car.pos.y, 'explosion', TILE_SIZE, TILE_SIZE);
+        	crash.lifespan = 1000;
+			crashSound = game.add.audio('crash', volume, true);
+			crashSound.play("",0,1,false);
+
         }
     }
     updateBoard();
+
 }
 
 function checkPlayer() {
@@ -460,11 +475,12 @@ function collision(character, OBJECT) {
 
 // Custom Phaser-based Functions
 function killPlayer(TYPE) {
-	let explosion = createSprite(player.pos.x, player.pos.y, 'explosion', TILE_SIZE, 2*TILE_SIZE+MARGIN);
-	explosionSound = game.add.audio('explosionSound', volume, false);
-	explosionSound.play();
+	let explosion = createSprite(player.pos.x, player.pos.y, 'explosion', 2*TILE_SIZE, 2*TILE_SIZE);
+	explosionSound = game.add.audio('explosionSound', volume, true);
+	explosionSound.play("",0,1,false);
+	game.time.events.add(Phaser.Timer.SECOND, function() { game.state.start('lose');}, this);
 	// add some type of delay here
-    game.state.start('lose');
+    
 }
 
 function killObject(object, objects) {
