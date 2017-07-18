@@ -38,7 +38,6 @@ var gameStart;
 var backgroundMusic;
 var volume = 1;
 var click;
-var sound = true;
 
 game.state.add('boot', bootState);
 game.state.add('load', loadState);

@@ -14,80 +14,72 @@ var mainState = {
         gameMenu.scale.setTo(0.125,0.125);
 
         function menuClick() {
-        	if (sound == true) {
-	            backgroundMusic.stop();
+        	if (volume) {
+	            backgroundMusic.stop(); 
 	        }
             game.state.start('menu');
         }   
 
         function muteClick() {
             
-            
             if (volume) {
                 backgroundMusic.stop();
-                muted.visible = true;
                 muted.bringToTop();
-                sound = false;
-                mute.visible = false;
                 muted.visible = true;
-                console.log("music");
+                mute.visible = false;
+                console.log('Pause');
             } else {
-                backgroundMusic.play();
+
+                backgroundMusic.play('',0,1,true, true);
                 muted.visible = false;
                 mute.visible = true;
-                sound = true;
-				console.log("what!!");
+                console.log('Play');
 
             }
             volume = !volume;
         }
+        
+        var mute_x = game.world.centerX - TILE_SIZE*(BOARD_WIDTH/2-1);
+        var mute_y = game.world.centerY - TILE_SIZE*(BOARD_HEIGHT/2+1);
+        
+        mute = game.add.button(mute_x, mute_y, 'mute', muteClick, this);
+        mute.anchor.setTo(0.5,0.5);
+        mute.scale.setTo(0.3,0.3);
 
-        if (sound) {
+        muted = game.add.button(mute_x, mute_y, 'muted', muteClick, this);
+        muted.anchor.setTo(0.5,0.5);
+        muted.scale.setTo(0.3,0.3);
 
-	        muted = game.add.button(game.world.centerX + TILE_SIZE*3.5, game.world.centerY - gameY/4, 'muted', muteClick, this);
-	        muted.scale.setTo(0.3,0.3);
-
-	        mute = game.add.button(game.world.centerX + TILE_SIZE*3.5, game.world.centerY - gameY/4, 'mute', muteClick, this);
-	        mute.scale.setTo(0.3,0.3);
-
-        } else {
-
-	        mute = game.add.button(game.world.centerX + TILE_SIZE*3.5, game.world.centerY - gameY/4, 'mute', muteClick, this);
-	        mute.scale.setTo(0.3,0.3);
-
-	        muted = game.add.button(game.world.centerX + TILE_SIZE*3.5, game.world.centerY - gameY/4, 'muted', muteClick, this);
-	        muted.scale.setTo(0.3,0.3);
-
-    	}
-
+        if (volume) {
+            mute.bringToTop();
+            backgroundMusic.play();
+        }
 
     },
     update: function() {
+        desertBackground.tilePosition.y += 1;
         if (movesDone == MOVES) {
-            count++;
+            eventCount++;
 
-            moveBarriers();
 
-            moveObstacles();
-
-            moveCars();
+            game.time.events.add(TIME_GAP, moveBarriers, this);
+            game.time.events.add(TIME_GAP*2, moveObstacles, this);
+            game.time.events.add(TIME_GAP*3, moveCars, this);
             
-            if (count == 2) {
-                runEvent();
-                count = 0;
+            if (eventCount == 2) {
+                game.time.events.add(TIME_GAP*4, runEvent, this);
+                eventCount = 0;
             }
             
             
-            detectCollisions();
+            game.time.events.add(TIME_GAP*5, detectCollisions, this);
 
-            [BARRIER, OBSTACLE, ENEMY].forEach(function(TYPE) {
-                if (collision(player, TYPE)[0]) {
-                    killPlayer(TYPE);
-                } 
-            }, this);
-            movesDone = 0;
-            player.input.enableDrag();
+            game.time.events.add(TIME_GAP*6, checkPlayer, this);
+            movesDone = 0;  
         }
+    },
+    render: function() {
+        game.debug.text("Time until event: " + game.time.events.duration, 32, 32)
     }
 };
 // Board inidices values
@@ -105,7 +97,8 @@ var RIGHT = 1;
 var distanceX = 0;
 var distanceY = 0;
 var currentBarrierWidth = 1;
-var count = 0;
+var eventCount = 0;
+var TIME_GAP = Phaser.Timer.QUARTER/2;
 
 var movesDone = 0;
 var board = [];
@@ -161,7 +154,7 @@ function runEvent() {
             currentBarrierWidth = Math.max(0, --currentBarrierWidth);
             break;
         case "GROW":
-            //currentBarrierWidth = Math.min(Math.floor(BOARD_WIDTH/2)-1, ++currentBarrierWidth); 
+            currentBarrierWidth = Math.min(Math.floor(BOARD_WIDTH/2)-1, ++currentBarrierWidth); 
             break;
         default:
             break;
@@ -196,6 +189,14 @@ function detectCollisions() {
     updateBoard();
 }
 
+function checkPlayer() {
+    [BARRIER, OBSTACLE, ENEMY].forEach(function(TYPE) {
+        if (collision(player, TYPE)[0]) {
+            killPlayer(TYPE);
+        } 
+    }, this);
+    player.input.enableDrag();
+}
 
 // Creating Methods
 function initializeGame() {
@@ -283,7 +284,6 @@ function makeEnemy(xPos, yPos) {
     enemy.gameLength = 1;
     
     enemy.pos = {x: xPos, y: yPos};
-    enemy.scale.y *= -1;
     cars.push(enemy);
 }
 
@@ -359,7 +359,7 @@ function moveBarriers() {
         makeBarrier(x2-i,y);    
     }
     
-    //detectCollisions();
+    console.log("Barriers Moved");
 }
 
 function moveObstacles() {
@@ -376,6 +376,7 @@ function moveObstacles() {
         killObject(dead_obstacles[i], obstacles);
     }
     detectCollisions();
+    console.log("Obstacles Moved");
 }
 
 function moveCars() {
@@ -392,6 +393,7 @@ function moveCars() {
         killObject(dead_cars[i], cars);
     }
     detectCollisions();
+    console.log("Cars Moved");
 }
 
 function movePlayer(direction) {
@@ -458,7 +460,6 @@ function collision(character, OBJECT) {
 
 // Custom Phaser-based Functions
 function killPlayer(TYPE) {
-    
 }
 
 function killObject(object, objects) {
