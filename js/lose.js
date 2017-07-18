@@ -16,7 +16,7 @@ var loseState = {
 
 		// Lose on Click function
 		function loseClick() {
-			game.state.start('win');
+			game.state.start('menu');
 		}	
 
 		function loseMusic() {
