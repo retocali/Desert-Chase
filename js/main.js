@@ -9,7 +9,8 @@ var mainState = {
         initializeGame();
 
         // to go back to Menu
-        gameMenu = game.add.button(game.world.centerX + TILE_SIZE*3.3, game.world.centerY - gameY/5.5, 'menu', menuClick, this);
+        gameMenu = game.add.button(game.world.centerX + TILE_SIZE*(BOARD_WIDTH/2-1), game.world.centerY - TILE_SIZE*(BOARD_HEIGHT/2+1), 'menu', menuClick, this);
+        gameMenu.anchor.setTo(0.5,0.5);
         gameMenu.scale.setTo(0.125,0.125);
 
         function menuClick() {
@@ -58,6 +59,7 @@ var mainState = {
 	        muted.scale.setTo(0.3,0.3);
 
     	}
+
 
     },
     update: function() {
@@ -159,11 +161,13 @@ function runEvent() {
             currentBarrierWidth = Math.max(0, --currentBarrierWidth);
             break;
         case "GROW":
-            currentBarrierWidth = Math.min(Math.floor(BOARD_WIDTH/2)-1, ++currentBarrierWidth); 
+            //currentBarrierWidth = Math.min(Math.floor(BOARD_WIDTH/2)-1, ++currentBarrierWidth); 
             break;
         default:
             break;
     }
+    LEVEL++;
+    updateLevel();
     event[1].destroy();
     makeEvent(0);
     updateEvents();
@@ -313,18 +317,20 @@ function makeEvent(i) {
     var num = Math.random();
     if (num < SPAWN_CHANCE) {
         if (num < OBSTACLE_SPAWN) {
-            let event = createSprite(i+1, BOARD_HEIGHT+0.5, 'obstacle');
+            let event = createSprite(i+2, BOARD_HEIGHT+0.5, 'obstacle');
             events.push(["OBSTACLE", event]);
         } else {
-            let event = createSprite(i+1, BOARD_HEIGHT+0.5, 'car');
+            let event = createSprite(i+2, BOARD_HEIGHT+0.5, 'car');
             events.push(["CAR", event]);
         }
     } else {
         if (Math.random() < 0.5) {
-            let event = createSprite(i+1, BOARD_HEIGHT+0.5, 'barrier');
+            let event = createSprite(i+2, BOARD_HEIGHT+0.5, 'barrier');
+            event.tint = 0x00ff00;
             events.push(["GROW", event])
         } else {
-            let event = createSprite(i+1, BOARD_HEIGHT+0.5, 'barrier');
+            let event = createSprite(i+2, BOARD_HEIGHT+0.5, 'barrier');
+            event.tint = 0xff0000;
             events.push(["SHRINK", event])
         }
     }
@@ -396,8 +402,13 @@ function movePlayer(direction) {
         return;
     }
     if (collision(player,ENEMY)[0]) {
-        pushCar(player.pos.x, player.pos.y, direction);
-        pushCar(player.pos.x, player.pos.y+1, direction);
+        front = pushCar(player.pos.x, player.pos.y, direction);
+        back = pushCar(player.pos.x, player.pos.y+1, direction);
+        if (!front && !back) {
+            player.pos.x -= direction;
+            movesDone--;
+        }
+        reposition(player)
     }
     movesDone++;
 }
@@ -413,7 +424,9 @@ function verticalMove(direction) {
 }
 
 function pushCar(x, y, direction) {
-    if (board[x][y][0] != ENEMY) {return;}
+    if (board[x][y][0] != ENEMY || player.pos.x == BOARD_WIDTH-1 || player.pos.x == 0) {
+        return false;
+    }
     let car = board[x][y][1];
     if (direction == LEFT) {
         car.pos.x = Math.max(--car.pos.x, 0);
@@ -422,6 +435,7 @@ function pushCar(x, y, direction) {
     }
     reposition(car);
     detectCollisions();
+    return true;
 }
 
 function collision(character, OBJECT) {
@@ -444,8 +458,8 @@ function collision(character, OBJECT) {
 
 // Custom Phaser-based Functions
 function killPlayer(TYPE) {
+    
 }
-
 
 function killObject(object, objects) {
     objects.splice(objects.indexOf(object), 1);
@@ -474,7 +488,8 @@ function yLoc(y) {
 
 // UI Functions
 function level() {
-    levelText = game.add.bitmapText(game.world.centerX, game.world.centerY + gameY/3, 'zigFont', "Level: " + LEVEL , 15);
+    levelText = game.add.bitmapText(game.world.centerX, game.world.centerY-TILE_SIZE*(BOARD_HEIGHT/2+1), 'zigFont', "Level: " + LEVEL , 20);
+    levelText.anchor.setTo(0.5,0.5);
     levelText.tint = 0x0000f9;   
 }
 
@@ -485,6 +500,6 @@ function updateLevel() {
 function updateEvents() {
     for (let i = 0; i < events.length; i++) {
         let event = events[i];
-        event[1].x = xLoc(i+1)
+        event[1].x = xLoc(i+2)
     }
 }
