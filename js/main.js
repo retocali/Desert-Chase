@@ -98,7 +98,7 @@ var distanceX = 0;
 var distanceY = 0;
 var currentBarrierWidth = 1;
 var eventCount = 0;
-var TIME_GAP = Phaser.Timer.QUARTER/2;
+var TIME_GAP = Phaser.Timer.QUARTER/5;
 
 var movesDone = 0;
 var board = [];
@@ -170,23 +170,38 @@ function detectCollisions() {
     // Check Collision
     updateBoard();
     for (var i = 0; i < cars.length; i++) {
+    	let crashed = false;
         let car = cars[i];
         var collider = collision(car, ENEMY);
         if (collider[0] && collider[1] != car) {
             killObject(car, cars);
             killObject(collider[1], cars)
+            crashed = true;
         }
         var collider = collision(car, OBSTACLE)
         if (collider[0]) {
             killObject(car, cars);
             killObject(collider[1], obstacles)
+			crashed = true;
+
         }
         var collider = collision(car, BARRIER)
         if (collider[0]) {
             killObject(car, cars);
+			crashed = true;
+
+        }
+
+        if (crashed) {
+        	let crash = createSprite(car.pos.x, car.pos.y, 'explosion', TILE_SIZE, TILE_SIZE);
+        	crash.lifespan = 1000;
+			crashSound = game.add.audio('crash', volume, true);
+			crashSound.play("",0,1,false);
+
         }
     }
     updateBoard();
+
 }
 
 function checkPlayer() {

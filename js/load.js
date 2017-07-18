@@ -40,6 +40,7 @@ var loadState = {
 	    game.load.audio('win', 'assets/sounds/win.mp3');
 	    game.load.audio('lose', 'assets/sounds/gameover.wav');
 	    game.load.audio('explosionSound', 'assets/sounds/explosion.wav');
+	    game.load.audio('crash', 'assets/sounds/crash.wav');
 
         // loadingMessage.text = "Loading Sprites ...";
         
