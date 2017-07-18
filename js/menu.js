@@ -21,7 +21,7 @@ var menuState = {
 
     // BGM
     backgroundMusic = game.add.audio('bgm', volume, true);
-    
+
 
     // Win/Lose Music
 	winSound = game.add.audio('win', volume, true);
