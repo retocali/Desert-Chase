@@ -143,7 +143,7 @@ function updateBoard() {
 }
 
 function gameReset() {
-    board = [];
+    //board = [];
     cars = [];
     obstacles = [];
     barriers = [];
@@ -275,18 +275,16 @@ function makePlayer(xPos, yPos) {
         if (movesDone < MOVES) {
             if (Math.abs(x) > Math.abs(y)) { //Horizontal move
                 if (x > 0 && sprite.pos.x < BOARD_WIDTH-1) {
-                    movePlayer(RIGHT)
+                    movePlayer(RIGHT);
                 } else if (x < 0 && sprite.pos.x > 0) {
-                    movePlayer(LEFT)
+                    movePlayer(LEFT);
                 }
                 reposition(player);
             } else if (Math.abs(x) < Math.abs(y)) {
                 if (y > 0 && sprite.pos.y < BOARD_HEIGHT-sprite.gameLength && movesDone == 0) {
-                    console.log(sprite.pos, BOARD_HEIGHT, BOARD_WIDTH)
-                    verticalMove(DOWN)
+                    verticalMove(DOWN);
                 } else if (y < 0 && sprite.pos.y > 0 && movesDone == 0) {
-                    console.log(sprite.pos)
-                    verticalMove(UP)
+                    verticalMove(UP);
                 }
                 reposition(player);
             } else if (x == 0 && y == 0){
@@ -443,7 +441,7 @@ function movePlayer(direction) {
 function verticalMove(direction) {
     player.pos.y += direction;
     if (collision(player,BARRIER)[0] || collision(player,OBSTACLE)[0]) {
-        player.pos.x -= direction;
+        player.pos.y -= direction;
         reposition(player);
         return;
     }
