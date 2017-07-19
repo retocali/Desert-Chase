@@ -10,9 +10,9 @@ var mainState = {
         initializeGame();
 
         // to go back to Menu
-        gameMenu = game.add.button(game.world.centerX + TILE_SIZE*(BOARD_WIDTH/2-1), game.world.centerY - TILE_SIZE*(BOARD_HEIGHT/2+1), 'menu', menuClick, this);
+        gameMenu = game.add.button(game.world.centerX + TILE_SIZE*(BOARD_WIDTH/2.75), game.world.centerY - TILE_SIZE*(BOARD_HEIGHT/1.55), 'menu', menuClick, this);
         gameMenu.anchor.setTo(0.5,0.5);
-        gameMenu.scale.setTo(0.125,0.125);
+        gameMenu.scale.setTo(0.35,0.43);
 
         function menuClick() {
             gameReset();
@@ -526,7 +526,7 @@ function yLoc(y) {
 function level() {
     levelText = game.add.bitmapText(game.world.centerX, game.world.centerY-TILE_SIZE*(BOARD_HEIGHT/2+1), 'zigFont', "MILE: " + LEVEL , 20);
     levelText.anchor.setTo(0.5,0.5);
-    levelText.tint = 0x0000f9;   
+    levelText.tint = 0x00bbff;   
 }
 
 function updateLevel() {
