@@ -22,7 +22,7 @@ var OBSTACLE_SPAWN = 0.25; // Chance that a obstacle is spawned instead of a car
 var EVENTS_SHOWN = 5;
 
 // Level
-var LEVEL = 1;
+var LEVEL = 0;
 var levelText;
 
 // UI Constants
