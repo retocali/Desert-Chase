@@ -51,6 +51,7 @@ var loadState = {
         game.load.image('obstacle', 'assets/sprites/obstacle.png');
         game.load.image('desertTile', 'assets/sprites/desertTile.png');
         game.load.image('explosion', 'assets/sprites/explosion.png');
+        game.load.image('black','assets/sprites/black.png');
 
 
     },
