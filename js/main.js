@@ -14,14 +14,10 @@ var mainState = {
         gameMenu.scale.setTo(0.125,0.125);
 
         function menuClick() {
+            gameReset();
         	if (volume) {
 	            backgroundMusic.stop(); 
             }
-            board = [];
-            cars = [];
-            obstacles = [];
-            barriers = [];
-            events = [];
             game.state.start('menu');
         }   
 
@@ -146,6 +142,13 @@ function updateBoard() {
     }
 }
 
+function gameReset() {
+    board = [];
+    cars = [];
+    obstacles = [];
+    barriers = [];
+    events = [];
+}
 function runEvent() {
     var event = events.shift();
     switch (event[0]) {
@@ -420,10 +423,8 @@ function moveCars() {
 
 function movePlayer(direction) {
     player.pos.x += direction;
-    desertBackground.tilePosition.x += direction*TILE_SIZE;
     if (collision(player,BARRIER)[0] || collision(player,OBSTACLE)[0]) {
         player.pos.x -= direction;
-        desertBackground.tilePosition.x -= direction*TILE_SIZE;
         reposition(player);
         return;
     }
@@ -432,7 +433,6 @@ function movePlayer(direction) {
         back = pushCar(player.pos.x, player.pos.y+1, direction);
         if (!front && !back) {
             player.pos.x -= direction;
-            desertBackground.tilePosition.x -= direction*TILE_SIZE;
             movesDone--;
         }
         reposition(player)
@@ -485,9 +485,11 @@ function collision(character, OBJECT) {
 
 // Custom Phaser-based Functions
 function killPlayer(TYPE) {
+    player.input.disableDrag();
 	let explosion = createSprite(player.pos.x, player.pos.y, 'explosion', 2*TILE_SIZE, 2*TILE_SIZE);
 	explosionSound = game.add.audio('explosionSound', volume, true);
-	explosionSound.play("",0,1,false);
+    explosionSound.play("",0,1,false);
+    gameReset();
 	game.time.events.add(Phaser.Timer.SECOND, function() { game.state.start('lose');}, this);
 	// add some type of delay here
     
