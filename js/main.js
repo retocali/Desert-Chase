@@ -2,6 +2,7 @@ var mainState = {
     preload: function() {
 
     	makeBackground();
+    	Darkness();
     	level();
 
     },
@@ -108,6 +109,9 @@ var cars = [];
 var obstacles = [];
 var barriers = [];
 var events = []
+
+
+
 
 // Update Functions
 function updateBoard() {
@@ -548,4 +552,14 @@ function updateEvents() {
         let event = events[i];
         event[1].x = xLoc(i+2)
     }
+}
+
+// Making the black spot
+
+function Darkness() {
+    let darknessUp = game.add.sprite(0, 0, 'black');
+    darknessUp.scale.setTo(gameX/darknessUp.width, (game.world.centerY-(BOARD_HEIGHT/2*TILE_SIZE)-5)/darknessUp.height);
+
+    let darknessDown = game.add.sprite(0, (game.world.centerY+(BOARD_HEIGHT/2*TILE_SIZE)+5), 'black')
+    darknessDown.scale.setTo(gameX/darknessUp.width, (game.world.centerY+(BOARD_HEIGHT/2*TILE_SIZE))/darknessUp.height);
 }
