@@ -16,7 +16,12 @@ var mainState = {
         function menuClick() {
         	if (volume) {
 	            backgroundMusic.stop(); 
-	        }
+            }
+            board = [];
+            cars = [];
+            obstacles = [];
+            barriers = [];
+            events = [];
             game.state.start('menu');
         }   
 
@@ -148,7 +153,7 @@ function runEvent() {
             makeObstacle(Math.floor(Math.random()*(BOARD_WIDTH-2))+1, 0);
             break;
         case "CAR":
-            makeEnemy(Math.floor(Math.random()*BOARD_WIDTH), BOARD_HEIGHT-1);
+            makeEnemy(Math.floor(Math.random()*(BOARD_WIDTH-currentBarrierWidth))+currentBarrierWidth, BOARD_HEIGHT-1);
             break;
         case "SHRINK":
             currentBarrierWidth = Math.max(0, --currentBarrierWidth);
@@ -273,9 +278,11 @@ function makePlayer(xPos, yPos) {
                 }
                 reposition(player);
             } else if (Math.abs(x) < Math.abs(y)) {
-                if (y > 0 && sprite.pos.y < BOARD_HEIGHT-1 && movesDone == 0) {
+                if (y > 0 && sprite.pos.y < BOARD_HEIGHT-sprite.gameLength && movesDone == 0) {
+                    console.log(sprite.pos, BOARD_HEIGHT, BOARD_WIDTH)
                     verticalMove(DOWN)
                 } else if (y < 0 && sprite.pos.y > 0 && movesDone == 0) {
+                    console.log(sprite.pos)
                     verticalMove(UP)
                 }
                 reposition(player);
@@ -413,8 +420,10 @@ function moveCars() {
 
 function movePlayer(direction) {
     player.pos.x += direction;
+    desertBackground.tilePosition.x += direction*TILE_SIZE;
     if (collision(player,BARRIER)[0] || collision(player,OBSTACLE)[0]) {
         player.pos.x -= direction;
+        desertBackground.tilePosition.x -= direction*TILE_SIZE;
         reposition(player);
         return;
     }
@@ -423,6 +432,7 @@ function movePlayer(direction) {
         back = pushCar(player.pos.x, player.pos.y+1, direction);
         if (!front && !back) {
             player.pos.x -= direction;
+            desertBackground.tilePosition.x -= direction*TILE_SIZE;
             movesDone--;
         }
         reposition(player)
