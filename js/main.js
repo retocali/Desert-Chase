@@ -159,7 +159,7 @@ function runEvent() {
             makeEnemy(Math.floor(Math.random()*(BOARD_WIDTH-currentBarrierWidth))+currentBarrierWidth, BOARD_HEIGHT-1);
             break;
         case "SHRINK":
-            currentBarrierWidth = Math.max(0, --currentBarrierWidth);
+            currentBarrierWidth = Math.max(1, --currentBarrierWidth);
             break;
         case "GROW":
             currentBarrierWidth = Math.min(Math.floor(BOARD_WIDTH/2)-1, ++currentBarrierWidth); 
@@ -215,7 +215,10 @@ function detectCollisions() {
 function checkPlayer() {
     [BARRIER, OBSTACLE, ENEMY].forEach(function(TYPE) {
         if (collision(player, TYPE)[0]) {
+            player.inputEnabled = false;
             killPlayer(TYPE);
+            
+            return;
         } 
     }, this);
     player.input.enableDrag();
@@ -281,9 +284,9 @@ function makePlayer(xPos, yPos) {
                 }
                 reposition(player);
             } else if (Math.abs(x) < Math.abs(y)) {
-                if (y > 0 && sprite.pos.y < BOARD_HEIGHT-sprite.gameLength && movesDone == 0) {
+                if (y > 0 && sprite.pos.y < BOARD_HEIGHT-sprite.gameLength) {
                     verticalMove(DOWN);
-                } else if (y < 0 && sprite.pos.y > 0 && movesDone == 0) {
+                } else if (y < 0 && sprite.pos.y > 0) {
                     verticalMove(UP);
                 }
                 reposition(player);
@@ -406,11 +409,19 @@ function moveCars() {
     var dead_cars = []
     for (var i = 0; i < cars.length; i++) {
         let car = cars[i];
+        let distance = player.pos.x-car.pos.x;
+        if (car.pos.y < player.pos.y && distance != 0) {
+            car.pos.x += distance/Math.abs(distance);
+            car.pos.y++;
+        } else if (car.pos.y < player.pos.y && distance == 0) {
+            car.pos.y+=2;
+        }
         car.pos.y--;
+    
         reposition(car);
         if (car.pos.y < 0) {
             dead_cars.push(car);
-        }       
+        } 
     }
     for (var i = 0; i < dead_cars.length; i++) {
         killObject(dead_cars[i], cars);
@@ -445,7 +456,7 @@ function verticalMove(direction) {
         reposition(player);
         return;
     }
-    movesDone += 2;
+    movesDone++;
 }
 
 function pushCar(x, y, direction) {
@@ -483,7 +494,7 @@ function collision(character, OBJECT) {
 
 // Custom Phaser-based Functions
 function killPlayer(TYPE) {
-    player.input.disableDrag();
+    
 	let explosion = createSprite(player.pos.x, player.pos.y, 'explosion', 2*TILE_SIZE, 2*TILE_SIZE);
 	explosionSound = game.add.audio('explosionSound', volume, true);
     explosionSound.play("",0,1,false);
