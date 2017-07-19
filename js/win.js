@@ -4,7 +4,7 @@ var winState = {
 
         console.log("Win!");
 
-		var winText = game.add.text(game.world.centerX, game.world.centerY + TILE_SIZE*3,"Click on the You Win to start new level", {font: "20px Arial", fill: "#0ff0ff"});
+		var winText = game.add.text(game.world.centerX, game.world.centerY + TILE_SIZE*3,"Now survive as far as you can!", {font: "20px Arial", fill: "#0ff0ff"});
 		winText.anchor.setTo(0.5,0.5);
 
 		// Start button
