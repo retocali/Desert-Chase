@@ -510,13 +510,16 @@ function yLoc(y) {
 
 // UI Functions
 function level() {
-    levelText = game.add.bitmapText(game.world.centerX, game.world.centerY-TILE_SIZE*(BOARD_HEIGHT/2+1), 'zigFont', "Level: " + LEVEL , 20);
+    levelText = game.add.bitmapText(game.world.centerX, game.world.centerY-TILE_SIZE*(BOARD_HEIGHT/2+1), 'zigFont', "MILE: " + LEVEL , 20);
     levelText.anchor.setTo(0.5,0.5);
     levelText.tint = 0x0000f9;   
 }
 
 function updateLevel() {
-	levelText.setText("Level: " + LEVEL, 20);
+	levelText.setText("MILE: " + LEVEL, 20);
+	if (LEVEL == 50) {
+		game.state.start('win');
+	}
 }
 
 function updateEvents() {

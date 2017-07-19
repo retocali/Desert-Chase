@@ -16,7 +16,8 @@ var winState = {
 
 		// Win on Click function
 		function winClick() {
-			game.state.start('lose');
+			backgroundMusic.stop();
+			game.state.start('main');
 		}	
 
 	    function winMusic() {

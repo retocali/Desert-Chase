@@ -12,10 +12,13 @@ var loseState = {
 		gameStart.scale.setTo(0.75,0.75);
 		gameStart.anchor.setTo(0.5,0.5);
 
+
 		loseMusic();
 
 		// Lose on Click function
 		function loseClick() {
+			LEVEL = 0;
+			backgroundMusic.stop();
 			game.state.start('menu');
 		}	
 
