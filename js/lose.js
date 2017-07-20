@@ -4,8 +4,8 @@ var loseState = {
 
         console.log("Lose!");
 
-		var loseText = game.add.text(game.world.centerX, game.world.centerY + TILE_SIZE *3, "Click on the Game Over to restart the game", {font: "20px Arial", fill: "#0ff0ff"});
-		loseText.anchor.setTo(0.5,0.5);
+		// var loseText = game.add.text(game.world.centerX, game.world.centerY + TILE_SIZE *3, "Click on the Game Over to restart the game", {font: "20px Arial", fill: "#0ff0ff"});
+		// loseText.anchor.setTo(0.5,0.5);
 
 		// Start button
 		gameStart = game.add.button(game.world.centerX, game.world.centerY, 'loseScreen', loseClick, this);
