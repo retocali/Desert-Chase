@@ -5,7 +5,7 @@ var menuState = {
 
 	click = game.add.audio('click', volume);
 
-    nameLabel = game.add.bitmapText(game.world.centerX, game.world.centerY - TILE_SIZE*4.5, 'zigFont', "Road Warrior", 63);
+    nameLabel = game.add.bitmapText(game.world.centerX, game.world.centerY - TILE_SIZE*4.5, 'zigFont', "Desert Chase", 60);
     nameLabel.anchor.setTo(0.5,0.5);
     nameLabel.tint = 0x00bbff;   
 
