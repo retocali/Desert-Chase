@@ -12,5 +12,5 @@ function makeBackground() {
     // desertBackground.anchor.setTo(0.5, 0.5);
     // desertBackground.scale.setTo(gameX*scaleRatio/desertBackground.width,gameY*scaleRatio/desertBackground.height);
     desertBackground = game.add.tileSprite(0, 0, gameX*scaleRatio, gameY*scaleRatio, 'desertBackground');
-    desertBackground.tileScale.x = (game.world.centerX+TILE_SIZE)/gameX;
+    desertBackground.tileScale.x = (game.world.centerX+1.25*TILE_SIZE)/gameX;
 }
