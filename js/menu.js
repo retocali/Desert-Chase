@@ -1,23 +1,30 @@
 var menuState = {
 
 	create: function() {
-		
+	
+
 	click = game.add.audio('click', volume);
 
-	var nameLabel = game.add.text(game.world.centerX - gameX/5,game.world.centerY - gameY/3.7 ,"Road Warrior", {font: "64px Arial", fill: "#0ff0ff"});
+    nameLabel = game.add.bitmapText(game.world.centerX, game.world.centerY - TILE_SIZE*4.5, 'zigFont', "Road Warrior", 63);
+    nameLabel.anchor.setTo(0.5,0.5);
+    nameLabel.tint = 0x00bbff;   
+
 	console.log("Menued...");
 
 	// Start button
-	gameStart = game.add.button(game.world.centerX - 200, game.world.centerY - gameY/5.5, 'start', startClick, this);
-	gameStart.scale.setTo(0.25,0.25);
-
-	// Credit button
-	credit = game.add.button(game.world.centerX - 200, game.world.centerY, 'credit', creditClick, this)
-	gameStart.scale.setTo(0.25,0.25);
+	gameStart = game.add.button(game.world.centerX, game.world.centerY - 2*TILE_SIZE, 'start', startClick, this);
+	gameStart.anchor.setTo(0.5,0.5);
+	gameStart.scale.setTo(0.5,0.5);
 
 	// Instruction button
-	credit = game.add.button(game.world.centerX, game.world.centerY, 'instruction', instructionClick, this)
-	gameStart.scale.setTo(0.25,0.25);
+	instruction = game.add.button(game.world.centerX, +0.75*TILE_SIZE +game.world.centerY, 'instruction', instructionClick, this)
+	instruction.anchor.setTo(0.5,0.5);
+	instruction.scale.setTo(0.5,0.5);
+
+	// Credit button
+	credit = game.add.button(game.world.centerX, game.world.centerY + 3.5*TILE_SIZE, 'credit', creditClick, this)
+	credit.anchor.setTo(0.5,0.5);
+	credit.scale.setTo(0.5,0.5);
 
     // BGM
     backgroundMusic = game.add.audio('bgm', volume, true);
