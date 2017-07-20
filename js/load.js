@@ -33,6 +33,7 @@ var loadState = {
         // Overlays
         game.load.image('loseScreen', 'assets/sprites/gameover.png');
         game.load.image('winScreen', 'assets/sprites/youwin.png');
+        game.load.image('eventBorder', 'assets/sprites/normal_border.png');
 
         // Audio; drop the beat; Used to load the background music, game over and win sounds, and UI sounds
 	    game.load.audio('bgm', 'assets/sounds/PuzzleTheme1.wav');
