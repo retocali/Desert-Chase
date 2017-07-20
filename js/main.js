@@ -246,6 +246,16 @@ function initializeGame() {
     // Put the enemy right below the player
     makeEnemy(START_X, START_Y+3);
 
+    // Creates the events
+    text = game.add.bitmapText(xLoc(2), yLoc(BOARD_HEIGHT+0.25), 'zigFont', "NEXT" , 10);
+    text.anchor.setTo(0.5,0.5);
+    text.x += (-EVENTS_SHOWN/2)*10;
+    for (let i = 0; i < EVENTS_SHOWN; i++) {
+        let border = createSprite(i+2, BOARD_HEIGHT+1, 'eventBorder', TILE_SIZE+10*scaleRatio,TILE_SIZE+10*scaleRatio);
+        border.x += (i-(EVENTS_SHOWN/2))*10;
+        
+    }  
+
     for (let i = 0; i < EVENTS_SHOWN; i++) {
         makeEvent(i);
     }
@@ -347,19 +357,23 @@ function makeEvent(i) {
     var num = Math.random();
     if (num < SPAWN_CHANCE) {
         if (num < OBSTACLE_SPAWN) {
-            let event = createSprite(i+2, BOARD_HEIGHT+0.5, 'obstacle');
+            let event = createSprite(i+2, BOARD_HEIGHT+1, 'obstacle', TILE_SIZE, TILE_SIZE/3);
+            event.x += (i-(EVENTS_SHOWN/2))*10;
             events.push(["OBSTACLE", event]);
         } else {
-            let event = createSprite(i+2, BOARD_HEIGHT+0.5, 'car');
+            let event = createSprite(i+2, BOARD_HEIGHT+1, 'car');
+            event.x += (i-(EVENTS_SHOWN/2))*10;
             events.push(["CAR", event]);
         }
     } else {
         if (Math.random() < 0.5) {
-            let event = createSprite(i+2, BOARD_HEIGHT+0.5, 'barrier');
+            let event = createSprite(i+2, BOARD_HEIGHT+1, 'barrier');
+            event.x += (i-(EVENTS_SHOWN/2))*10;
             event.tint = 0x00ff00;
             events.push(["GROW", event])
         } else {
-            let event = createSprite(i+2, BOARD_HEIGHT+0.5, 'barrier');
+            let event = createSprite(i+2, BOARD_HEIGHT+1, 'barrier');
+            event.x += (i-(EVENTS_SHOWN/2))*10;
             event.tint = 0xff0000;
             events.push(["SHRINK", event])
         }
@@ -550,7 +564,7 @@ function updateLevel() {
 function updateEvents() {
     for (let i = 0; i < events.length; i++) {
         let event = events[i];
-        event[1].x = xLoc(i+2)
+        event[1].x = xLoc(i+2) + (i-(EVENTS_SHOWN/2))*10;
     }
 }
 
