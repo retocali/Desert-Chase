@@ -7,8 +7,9 @@ var mainState = {
 
     },
     create: function() {
+        turns = Math.max(2, 4 - Math.floor(LEVEL / 10))+1
         initializeGame();
-
+        over = false;
         // to go back to Menu
         gameMenu = game.add.button(game.world.centerX + TILE_SIZE*(BOARD_WIDTH/2.75), game.world.centerY - TILE_SIZE*(BOARD_HEIGHT/1.55), 'menu', menuClick, this);
         gameMenu.anchor.setTo(0.5,0.5);
@@ -59,16 +60,29 @@ var mainState = {
 
     },
     update: function() {
+        frames++;
+        turns = Math.max(2 , 4 - Math.floor(LEVEL / 10));
+        
+        if (frames % 2 == 0) {
+            makeTracks(player, 'truckTracks');
+            cars.forEach(function(car) {
+                makeTracks(car, 'carTracks');
+            }, this);
+            obstacles.forEach(function(obstacle) {
+                makeTracks(obstacle, 'planeTracks');
+            }, this);
+        }
         desertBackground.tilePosition.y += 5;
-        if (movesDone == MOVES) {
+        
+        if (movesDone == MOVES && !over) {
+            LEVEL++;
+            updateLevel();
             eventCount++;
-
-
             game.time.events.add(TIME_GAP, moveBarriers, this);
             game.time.events.add(TIME_GAP*2, moveObstacles, this);
             game.time.events.add(TIME_GAP*3, moveCars, this);
             
-            if (eventCount == 2) {
+            if (turns - eventCount == 0) {
                 game.time.events.add(TIME_GAP*4, runEvent, this);
                 eventCount = 0;
             }
@@ -77,12 +91,9 @@ var mainState = {
             game.time.events.add(TIME_GAP*5, detectCollisions, this);
 
             game.time.events.add(TIME_GAP*6, checkPlayer, this);
-            movesDone = 0;  
+            movesDone = 0; 
         }
     },
-    render: function() {
-        // game.debug.text("Time until event: " + game.time.events.duration, 32, 32)
-    }
 };
 // Board inidices values
 var EMPTY = 0;
@@ -100,7 +111,8 @@ var distanceX = 0;
 var distanceY = 0;
 var currentBarrierWidth = 1;
 var eventCount = 0;
-var TIME_GAP = Phaser.Timer.QUARTER/5;
+var TIME_GAP = Phaser.Timer.QUARTER/4;
+var turns = 0;
 
 var movesDone = 0;
 var board = [];
@@ -108,8 +120,11 @@ var player;
 var cars = [];
 var obstacles = [];
 var barriers = [];
-var events = []
-
+var events = [];
+var over;
+var lockedAxis;
+var eventText;
+var frames = 0;
 
 
 
@@ -148,11 +163,13 @@ function updateBoard() {
 
 function gameReset() {
     //board = [];
+    eventCount = 0;
     cars = [];
     obstacles = [];
     barriers = [];
     events = [];
 }
+
 function runEvent() {
     var event = events.shift();
     switch (event[0]) {
@@ -171,8 +188,6 @@ function runEvent() {
         default:
             break;
     }
-    LEVEL++;
-    updateLevel();
     event[1].destroy();
     makeEvent(0);
     updateEvents();
@@ -181,25 +196,26 @@ function runEvent() {
 function detectCollisions() {
     // Check Collision
     updateBoard();
+    var deadObjects = [];
     for (var i = 0; i < cars.length; i++) {
     	let crashed = false;
         let car = cars[i];
         var collider = collision(car, ENEMY);
         if (collider[0] && collider[1] != car) {
-            killObject(car, cars);
-            killObject(collider[1], cars)
+            deadObjects.push([car, cars]);
+            deadObjects.push([collider[1], cars]);
             crashed = true;
         }
         var collider = collision(car, OBSTACLE)
         if (collider[0]) {
-            killObject(car, cars);
-            killObject(collider[1], obstacles)
+            deadObjects.push([car, cars]);
+            deadObjects.push([collider[1], obstacles]);
 			crashed = true;
 
         }
         var collider = collision(car, BARRIER)
         if (collider[0]) {
-            killObject(car, cars);
+            deadObjects.push([car, cars]);
 			crashed = true;
 
         }
@@ -212,6 +228,10 @@ function detectCollisions() {
 
         }
     }
+    for (var i = 0; i < deadObjects.length; i++) {
+        var element = deadObjects[i];
+        killObject(element[0], element[1]);
+    }
     updateBoard();
 
 }
@@ -220,8 +240,8 @@ function checkPlayer() {
     [BARRIER, OBSTACLE, ENEMY].forEach(function(TYPE) {
         if (collision(player, TYPE)[0]) {
             player.inputEnabled = false;
+            over = true;
             killPlayer(TYPE);
-            
             return;
         } 
     }, this);
@@ -246,10 +266,12 @@ function initializeGame() {
     // Put the enemy right below the player
     makeEnemy(START_X, START_Y+3);
 
+    let turnsLeft = turns - eventCount;
     // Creates the events
-    text = game.add.bitmapText(xLoc(2), yLoc(BOARD_HEIGHT+0.25), 'zigFont', "NEXT" , 10);
-    text.anchor.setTo(0.5,0.5);
-    text.x += (-EVENTS_SHOWN/2)*10;
+    eventText = game.add.bitmapText(xLoc(2), yLoc(BOARD_HEIGHT+0.25), 'zigFont', 
+            "NEXT IN \n" + turnsLeft + " TURNS", 10);
+    eventText.anchor.setTo(0.5,0.5);
+    eventText.x += (-EVENTS_SHOWN/2)*10;
     for (let i = 0; i < EVENTS_SHOWN; i++) {
         let border = createSprite(i+2, BOARD_HEIGHT+1, 'eventBorder', TILE_SIZE+10*scaleRatio,TILE_SIZE+10*scaleRatio);
         border.x += (i-(EVENTS_SHOWN/2))*10;
@@ -276,19 +298,36 @@ function makePlayer(xPos, yPos) {
     player.inputEnabled = true;
     player.input.enableDrag();
     player.events.onDragStop.add(onDragStop, this);
+    //player.events.onDragUpdate.add(onDragUpdate, this);
     player.events.onDragStart.add(onDragStart, this);
 
     function onDragStart(sprite, pointer) {
         distanceX = pointer.x;
         distanceY = pointer.y;
+        lockedAxis = false;
+        sprite.input.setDragLock(false, false);
     }
+    function onDragUpdate(sprite, pointer) {
+        if (!lockedAxis) {
+            let x = Math.abs(pointer.x - distanceX);
+            let y = Math.abs(pointer.y - distanceY);
+            if (x < 5 && y < 5) {
+                return;
+            }
+            if (x > y) {
+                sprite.input.setDragLock(true, false);
+            } else {
+                sprite.input.setDragLock(false, true);
+            }
+            lockedAxis = true;
+        }
 
+    }
     function onDragStop(sprite, pointer) {
         let x = pointer.x - distanceX;
         let y = pointer.y - distanceY;
         click = game.add.audio('click', volume);
-        click.play();
-    
+        click.play();    
         if (movesDone < MOVES) {
             if (Math.abs(x) > Math.abs(y)) { //Horizontal move
                 if (x > 0 && sprite.pos.x < BOARD_WIDTH-1) {
@@ -300,7 +339,7 @@ function makePlayer(xPos, yPos) {
             } else if (Math.abs(x) < Math.abs(y)) {
                 if (y > 0 && sprite.pos.y < BOARD_HEIGHT-sprite.gameLength) {
                     verticalMove(DOWN);
-                } else if (y < 0 && sprite.pos.y > 0) {
+                } else if (y < 0 && sprite.pos.y > 1) {
                     verticalMove(UP);
                 }
                 reposition(player);
@@ -313,6 +352,9 @@ function makePlayer(xPos, yPos) {
         if (movesDone == MOVES) {
             player.input.disableDrag();
         }
+        let turnsLeft = turns - eventCount;
+        eventText.text = "NEXT IN \n" + turnsLeft + " TURNS";
+        sprite.input.setDragLock(false, false);
     }
 }
 
@@ -377,6 +419,39 @@ function makeEvent(i) {
             event.tint = 0xff0000;
             events.push(["SHRINK", event])
         }
+    }
+}
+
+function makeTracks(character, image) {
+    let yPlacement = character.pos.y+character.gameLength-0.50;
+    if (!character.allTracks) {
+        character.allTracks = [];
+        let tracks = createSprite(character.pos.x, yPlacement, image, TILE_SIZE, TILE_SIZE/5);
+        tracks.x = character.x;
+        character.allTracks.push(tracks);
+        return;
+
+    } else {
+        let previousTrack = character.allTracks[character.allTracks.length-1];
+        
+        if (previousTrack.y >= yLoc(yPlacement)+previousTrack.height) {
+            let tracks = createSprite(character.pos.x, yPlacement, image, TILE_SIZE, TILE_SIZE/5);
+            tracks.x = character.x;
+            character.allTracks.push(tracks);
+        }
+        let dead_tracks = []
+    
+        character.allTracks.forEach(function(element) {
+            element.y += 4;
+            element.alpha = Math.max(element.alpha-0.04, 0);
+            if (element.alpha == 0) {
+                dead_tracks.push(element);
+            }
+        }, this);
+        
+        dead_tracks.forEach(function(tracks) {
+            killObject(tracks, character.allTracks)
+        }, this);
     }
 }
 
@@ -465,16 +540,27 @@ function movePlayer(direction) {
         reposition(player)
     }
     movesDone++;
+    checkPlayer();
 }
 
 function verticalMove(direction) {
     player.pos.y += direction;
+    reposition(player);
+    movesDone++;
+    if (collision(player,ENEMY)[0] && direction == UP) {
+        let car = board[player.pos.x][player.pos.y][1];
+        car.pos.y = Math.max(--car.pos.y, 0);
+        reposition(car);
+        detectCollisions();
+        return;
+    }
     if (collision(player,BARRIER)[0] || collision(player,OBSTACLE)[0]) {
+        movesDone--;
         player.pos.y -= direction;
         reposition(player);
         return;
-    }
-    movesDone++;
+    } 
+    checkPlayer();  
 }
 
 function pushCar(x, y, direction) {
@@ -511,25 +597,30 @@ function collision(character, OBJECT) {
 }
 
 // Custom Phaser-based Functions
-function killPlayer(TYPE) {
-    
+function killPlayer(TYPE) { 
 	let explosion = createSprite(player.pos.x, player.pos.y, 'explosion', 2*TILE_SIZE, 2*TILE_SIZE);
 	explosionSound = game.add.audio('explosionSound', volume, true);
     explosionSound.play("",0,1,false);
     gameReset();
 	game.time.events.add(Phaser.Timer.SECOND, function() { game.state.start('lose');}, this);
-	// add some type of delay here
-    
 }
 
 function killObject(object, objects) {
     objects.splice(objects.indexOf(object), 1);
+    if (object.allTracks) {
+        console.log("No traces");
+        for (var i = 0; i < object.allTracks.length; i++) {
+            object.allTracks[i].destroy();
+        }
+    }
     object.destroy();
 }
 
 function reposition(character) {
-    character.x = xLoc(character.pos.x);
-    character.y = yLoc(character.pos.y);
+    game.add.tween(character).to( { x: xLoc(character.pos.x) }, 250, Phaser.Easing.Linear.InOut, true);
+    game.add.tween(character).to( { y: yLoc(character.pos.y) }, 250, Phaser.Easing.Linear.InOut, true);
+    // character.x = ;
+    // character.y = yLoc(character.pos.y);
 }
 
 function createSprite(x, y, sprite, sizeX = TILE_SIZE, sizeY = TILE_SIZE) {
@@ -566,6 +657,8 @@ function updateEvents() {
         let event = events[i];
         event[1].x = xLoc(i+2) + (i-(EVENTS_SHOWN/2))*10;
     }
+    let turnsLeft = turns - eventCount+1;
+    eventText.text = "NEXT IN \n" + turnsLeft + " TURNS";
 }
 
 // Making the black spot

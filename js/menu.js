@@ -21,7 +21,7 @@ var menuState = {
 	gameStart.scale.setTo(0.5,0.5);
 
 	// Instruction button
-	instruction = game.add.button(game.world.centerX, +0.75*TILE_SIZE +game.world.centerY, 'instruction', instructionClick, this)
+	instruction = game.add.button(game.world.centerX, 0.75*TILE_SIZE + game.world.centerY, 'instruction', instructionClick, this)
 	instruction.anchor.setTo(0.5,0.5);
 	instruction.scale.setTo(0.5,0.5);
 
