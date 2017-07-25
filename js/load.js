@@ -46,6 +46,9 @@ var loadState = {
         // loadingMessage.text = "Loading Sprites ...";
         
         // The sprites
+        game.load.image('truckTracks', 'assets/sprites/truck_track.png');
+        game.load.image('carTracks', 'assets/sprites/car_track.png');
+        game.load.image('planeTracks', 'assets/sprites/plane_track.png');
         game.load.image('car', 'assets/sprites/car.png');
         game.load.image('barrier', 'assets/sprites/barrier.png');
         game.load.image('truck', 'assets/sprites/truck.png');
