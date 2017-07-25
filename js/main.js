@@ -8,6 +8,7 @@ var mainState = {
     },
 
     create: function() {
+        game.input.mouse.enabled = !game.device.mspointer;
         turns = Math.max(3, 5 - Math.floor(LEVEL / 10))
         initializeGame();
         over = false;

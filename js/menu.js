@@ -1,7 +1,7 @@
 var menuState = {
 
 	create: function() {
-	
+	game.input.mouse.enabled = !game.device.mspointer;
 
 	click = game.add.audio('click', volume);
 
