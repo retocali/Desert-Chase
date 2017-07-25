@@ -61,16 +61,16 @@ var mainState = {
     },
     update: function() {
         frames++;
-        turns = Math.max(2 , 4 - Math.floor(LEVEL / 10));
         
-        if (frames % 2 == 0) {
-            // makeTracks(player, 'truckTracks');
-            // cars.forEach(function(car) {
-            //     makeTracks(car, 'carTracks');
-            // }, this);
-            // obstacles.forEach(function(obstacle) {
-            //     makeTracks(obstacle, 'planeTracks');
-            // }, this);
+        if (frames % 10 == 0) {
+            turns = Math.max(2 , 4 - Math.floor(LEVEL / 10));
+            makeTracks(player, 'truckTracks');
+            cars.forEach(function(car) {
+                makeTracks(car, 'carTracks');
+            }, this);
+            obstacles.forEach(function(obstacle) {
+                makeTracks(obstacle, 'planeTracks');
+            }, this);
             frames = 0;
         }
         desertBackground.tilePosition.y += 5;
@@ -425,7 +425,7 @@ function makeEvent(i) {
 
 function makeTracks(character, image) {
     let yPlacement = character.pos.y+character.gameLength-0.50;
-    if (!character.allTracks) {
+    if (!character.allTracks || character.allTracks.length == 0) {
         character.allTracks = [];
         let tracks = createSprite(character.pos.x, yPlacement, image, TILE_SIZE, TILE_SIZE/5);
         tracks.x = character.x;
@@ -444,14 +444,14 @@ function makeTracks(character, image) {
     
         character.allTracks.forEach(function(element) {
             element.y += 4;
-            element.alpha = Math.max(element.alpha-0.04, 0);
+            element.alpha = Math.max(element.alpha-0.1, 0);
             if (element.alpha == 0) {
                 dead_tracks.push(element);
             }
         }, this);
         
         dead_tracks.forEach(function(tracks) {
-            killObject(tracks, character.allTracks)
+            killObject(tracks, character.allTracks);
         }, this);
     }
 }
