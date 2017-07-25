@@ -88,6 +88,7 @@ var mainState = {
             
             // Runs the event
             ++eventCount;
+            updateEvents();
             if (turns - eventCount == 0) {
                 game.time.events.add(TIME_GAP*4, runEvent, this);
                 eventCount = 0;
@@ -98,7 +99,7 @@ var mainState = {
             game.time.events.add(TIME_GAP*6, checkPlayer, this);
 
             movesDone = 0; 
-            updateEvents();
+            game.time.events.add(TIME_GAP*7, updateEvents, this);
         }
     },
 };
