@@ -8,7 +8,7 @@ var mainState = {
     },
 
     create: function() {
-        turns = Math.max(2, 4 - Math.floor(LEVEL / 10))
+        turns = Math.max(3, 5 - Math.floor(LEVEL / 10))
         initializeGame();
         over = false;
         // to go back to Menu
@@ -62,10 +62,14 @@ var mainState = {
     },
 
     update: function() {
+        if (over) {
+            console.log("Done");
+            return;
+        }
         frames++;
         
         if (frames % 5 == 0) {
-            turns = Math.max(2 , 4 - Math.floor(LEVEL / 10));
+            turns = Math.max(3 , 5 - Math.floor(LEVEL / 10));
             moveTracks(player, 'truckTracks');
             cars.forEach(function(car) {
                 moveTracks(car, 'carTracks');
@@ -78,7 +82,7 @@ var mainState = {
         desertBackground.tilePosition.y += 5;
         
         // Game Logic
-        if (movesDone == MOVES && !over) {
+        if (movesDone == MOVES) {
             LEVEL++;
             updateLevel();
             
@@ -96,10 +100,10 @@ var mainState = {
             
             
             game.time.events.add(TIME_GAP*5, detectCollisions, this);
-            game.time.events.add(TIME_GAP*6, checkPlayer, this);
+            game.time.events.add(TIME_GAP*6, updateEvents, this);
 
             movesDone = 0; 
-            game.time.events.add(TIME_GAP*7, updateEvents, this);
+            game.time.events.add(TIME_GAP*7, checkPlayer, this);
         }
     },
 };
@@ -352,7 +356,6 @@ function makeEnemy(xPos, yPos) {
 }
 
 function makeObstacle(xPos, yPos) {
-    console.log(xPos, yPos)
     let obstacle = createSprite(xPos, yPos, 'obstacle', TILE_SIZE*3+MARGIN*2, TILE_SIZE);
     
     obstacle.gameWidth = 3;
@@ -438,6 +441,10 @@ function moveTracks(character, image) {
 }
 
 function moveBarriers() {
+    if (!barriers) {
+        console.log("Couldn't move barriers");
+        return;
+    }
     let x1 = 0;
     let x2 = BOARD_WIDTH-1;
     let y = 0;
@@ -462,6 +469,10 @@ function moveBarriers() {
 }
 
 function moveObstacles() {
+    if (!obstacles) {
+        console.log("Couldn't move obstacles");
+        return;
+    }
     var dead_obstacles = [];
     for (var i = 0; i < obstacles.length; i++) {
         let obstacle = obstacles[i];
@@ -479,6 +490,10 @@ function moveObstacles() {
 }
 
 function moveCars() {
+    if (!cars) {
+        console.log("Couldn't move cars");
+        return;
+    }
     var dead_cars = []
     for (var i = 0; i < cars.length; i++) {
         let car = cars[i];
@@ -578,11 +593,20 @@ function collision(character, OBJECT) {
 
 // Custom Phaser-based Functions
 function killPlayer(TYPE) { 
-	let explosion = createSprite(player.pos.x, player.pos.y, 'explosion', 2*TILE_SIZE, 2*TILE_SIZE);
-	explosionSound = game.add.audio('explosionSound', volume, true);
+    let explosion = createSprite(player.pos.x, player.pos.y, 'explosion', 2*TILE_SIZE, 2*TILE_SIZE);
+    
+    explosion.alpha = 0;
+    explosion.scale.setTo(0);
+    
+    game.add.tween(explosion).to( { 
+        height: 2*TILE_SIZE, width: 2*TILE_SIZE, alpha: 1 
+    } , 250, Phaser.Easing.Exponential. Out, true);
+    
+    explosionSound = game.add.audio('explosionSound', volume, true);
     explosionSound.play("",0,1,false);
+    
     gameReset();
-	game.time.events.add(Phaser.Timer.SECOND, function() { game.state.start('lose');}, this);
+    game.time.events.add(Phaser.Timer.SECOND, function() { game.state.start('lose');}, this);
 }
 
 function killObject(object, objects) {
@@ -596,8 +620,8 @@ function killObject(object, objects) {
 }
 
 function reposition(character) {
-    game.add.tween(character).to( { x: xLoc(character.pos.x) }, 250, Phaser.Easing.Linear.InOut, true);
-    game.add.tween(character).to( { y: yLoc(character.pos.y) }, 250, Phaser.Easing.Linear.InOut, true);
+    game.add.tween(character).to( { x: xLoc(character.pos.x) }, 250, Phaser.Easing.Sinusoidal.Out, true);
+    game.add.tween(character).to( { y: yLoc(character.pos.y) }, 250, Phaser.Easing.Sinusoidal.Out, true);
 }
 
 function createSprite(x, y, sprite, sizeX = TILE_SIZE, sizeY = TILE_SIZE) {
@@ -630,12 +654,16 @@ function updateLevel() {
 }
 
 function updateEvents() {
+    if (!events) {
+        console.log("Couldn't update events");
+        return;
+    }
     for (let i = 0; i < events.length; i++) {
         let event = events[i];
         events[i][1].tint = 0x999999;    
         event[1].x = game.world.centerX +  (i-Math.floor(EVENTS_SHOWN/2))*(TILE_SIZE*1.5);
     }
-    console.log(turns, eventCount);
+    
     let turnsLeft = turns - eventCount;
     events[0][1].tint = 0xffffff;
     eventText.text = " NEXT IN \n\n\n\n\n\n\n " + turnsLeft + " TURNS";
