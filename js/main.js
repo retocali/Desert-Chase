@@ -64,13 +64,14 @@ var mainState = {
         turns = Math.max(2 , 4 - Math.floor(LEVEL / 10));
         
         if (frames % 2 == 0) {
-            makeTracks(player, 'truckTracks');
-            cars.forEach(function(car) {
-                makeTracks(car, 'carTracks');
-            }, this);
-            obstacles.forEach(function(obstacle) {
-                makeTracks(obstacle, 'planeTracks');
-            }, this);
+            // makeTracks(player, 'truckTracks');
+            // cars.forEach(function(car) {
+            //     makeTracks(car, 'carTracks');
+            // }, this);
+            // obstacles.forEach(function(obstacle) {
+            //     makeTracks(obstacle, 'planeTracks');
+            // }, this);
+            frames = 0;
         }
         desertBackground.tilePosition.y += 5;
         
