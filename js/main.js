@@ -7,7 +7,7 @@ var mainState = {
 
     },
     create: function() {
-        turns = Math.max(2, 4 - Math.floor(LEVEL / 10))+1
+        turns = Math.max(2, 4 - Math.floor(LEVEL / 10))
         initializeGame();
         over = false;
         // to go back to Menu
@@ -62,7 +62,7 @@ var mainState = {
     update: function() {
         frames++;
         
-        if (frames % 10 == 0) {
+        if (frames % 5 == 0) {
             turns = Math.max(2 , 4 - Math.floor(LEVEL / 10));
             makeTracks(player, 'truckTracks');
             cars.forEach(function(car) {
@@ -78,7 +78,7 @@ var mainState = {
         if (movesDone == MOVES && !over) {
             LEVEL++;
             updateLevel();
-            eventCount++;
+            ++eventCount;
             game.time.events.add(TIME_GAP, moveBarriers, this);
             game.time.events.add(TIME_GAP*2, moveObstacles, this);
             game.time.events.add(TIME_GAP*3, moveCars, this);
@@ -93,6 +93,7 @@ var mainState = {
 
             game.time.events.add(TIME_GAP*6, checkPlayer, this);
             movesDone = 0; 
+            updateEvents();
         }
     },
 };
@@ -269,10 +270,10 @@ function initializeGame() {
 
     let turnsLeft = turns - eventCount;
     // Creates the events
-    eventText = game.add.bitmapText(xLoc(2), yLoc(BOARD_HEIGHT+0.25), 'zigFont', 
-            "NEXT IN \n" + turnsLeft + " TURNS", 10);
+    eventText = game.add.bitmapText(xLoc(2), yLoc(BOARD_HEIGHT+0.25), 'zigFont', "", 10);
     eventText.anchor.setTo(0.5,0.5);
     eventText.x += (-EVENTS_SHOWN/2)*10;
+
     for (let i = 0; i < EVENTS_SHOWN; i++) {
         let border = createSprite(i+2, BOARD_HEIGHT+1, 'eventBorder', TILE_SIZE+10*scaleRatio,TILE_SIZE+10*scaleRatio);
         border.x += (i-(EVENTS_SHOWN/2))*10;
@@ -282,6 +283,7 @@ function initializeGame() {
     for (let i = 0; i < EVENTS_SHOWN; i++) {
         makeEvent(i);
     }
+    updateEvents();
 }
 
 function makePlayer(xPos, yPos) {
@@ -353,8 +355,6 @@ function makePlayer(xPos, yPos) {
         if (movesDone == MOVES) {
             player.input.disableDrag();
         }
-        let turnsLeft = turns - eventCount;
-        eventText.text = "NEXT IN \n" + turnsLeft + " TURNS";
         sprite.input.setDragLock(false, false);
     }
 }
@@ -607,7 +607,7 @@ function killPlayer(TYPE) {
 }
 
 function killObject(object, objects) {
-    objects.splice(objects.indexOf(object), 1);
+    deleteFromList(objects, object);
     if (object.allTracks) {
         console.log("No traces");
         for (var i = 0; i < object.allTracks.length; i++) {
@@ -658,7 +658,8 @@ function updateEvents() {
         let event = events[i];
         event[1].x = xLoc(i+2) + (i-(EVENTS_SHOWN/2))*10;
     }
-    let turnsLeft = turns - eventCount+1;
+    console.log(turns, eventCount);
+    let turnsLeft = turns - eventCount;
     eventText.text = "NEXT IN \n" + turnsLeft + " TURNS";
 }
 
@@ -670,4 +671,17 @@ function Darkness() {
 
     let darknessDown = game.add.sprite(0, (game.world.centerY+(BOARD_HEIGHT/2*TILE_SIZE)+5), 'black')
     darknessDown.scale.setTo(gameX/darknessUp.width, (game.world.centerY+(BOARD_HEIGHT/2*TILE_SIZE))/darknessUp.height);
+}
+
+// From SolarJSGames https://twitter.com/SolarJSGames/status/524553896908566528
+// As a fast 1-item splice
+function deleteFromList(list, item) {
+    var length = list.length;
+    var index = list.indexOf(item);
+    if (length) {
+        while (index < length) {
+            list[index++] = list[index];
+        }
+        --list.length;
+    }
 }
