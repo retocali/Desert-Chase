@@ -6,6 +6,7 @@ var mainState = {
     	level();
 
     },
+
     create: function() {
         turns = Math.max(2, 4 - Math.floor(LEVEL / 10))
         initializeGame();
@@ -59,30 +60,34 @@ var mainState = {
         }
 
     },
+
     update: function() {
         frames++;
         
         if (frames % 5 == 0) {
             turns = Math.max(2 , 4 - Math.floor(LEVEL / 10));
-            makeTracks(player, 'truckTracks');
+            moveTracks(player, 'truckTracks');
             cars.forEach(function(car) {
-                makeTracks(car, 'carTracks');
+                moveTracks(car, 'carTracks');
             }, this);
             obstacles.forEach(function(obstacle) {
-                makeTracks(obstacle, 'planeTracks');
+                moveTracks(obstacle, 'planeTracks');
             }, this);
             frames = 0;
         }
         desertBackground.tilePosition.y += 5;
         
+        // Game Logic
         if (movesDone == MOVES && !over) {
             LEVEL++;
             updateLevel();
-            ++eventCount;
+            
             game.time.events.add(TIME_GAP, moveBarriers, this);
             game.time.events.add(TIME_GAP*2, moveObstacles, this);
             game.time.events.add(TIME_GAP*3, moveCars, this);
             
+            // Runs the event
+            ++eventCount;
             if (turns - eventCount == 0) {
                 game.time.events.add(TIME_GAP*4, runEvent, this);
                 eventCount = 0;
@@ -90,8 +95,8 @@ var mainState = {
             
             
             game.time.events.add(TIME_GAP*5, detectCollisions, this);
-
             game.time.events.add(TIME_GAP*6, checkPlayer, this);
+
             movesDone = 0; 
             updateEvents();
         }
@@ -164,7 +169,6 @@ function updateBoard() {
 }
 
 function gameReset() {
-    //board = [];
     eventCount = 0;
     cars = [];
     obstacles = [];
@@ -270,15 +274,8 @@ function initializeGame() {
 
     let turnsLeft = turns - eventCount;
     // Creates the events
-    eventText = game.add.bitmapText(xLoc(2), yLoc(BOARD_HEIGHT+0.25), 'zigFont', "", 10);
+    eventText = game.add.bitmapText(game.world.centerX - Math.floor(EVENTS_SHOWN/2)*(TILE_SIZE*1.5), yLoc(BOARD_HEIGHT+1), 'zigFont', "", 15);
     eventText.anchor.setTo(0.5,0.5);
-    eventText.x += (-EVENTS_SHOWN/2)*10;
-
-    for (let i = 0; i < EVENTS_SHOWN; i++) {
-        let border = createSprite(i+2, BOARD_HEIGHT+1, 'eventBorder', TILE_SIZE+10*scaleRatio,TILE_SIZE+10*scaleRatio);
-        border.x += (i-(EVENTS_SHOWN/2))*10;
-        
-    }  
 
     for (let i = 0; i < EVENTS_SHOWN; i++) {
         makeEvent(i);
@@ -301,7 +298,6 @@ function makePlayer(xPos, yPos) {
     player.inputEnabled = true;
     player.input.enableDrag();
     player.events.onDragStop.add(onDragStop, this);
-    //player.events.onDragUpdate.add(onDragUpdate, this);
     player.events.onDragStart.add(onDragStart, this);
 
     function onDragStart(sprite, pointer) {
@@ -310,52 +306,36 @@ function makePlayer(xPos, yPos) {
         lockedAxis = false;
         sprite.input.setDragLock(false, false);
     }
-    function onDragUpdate(sprite, pointer) {
-        if (!lockedAxis) {
-            let x = Math.abs(pointer.x - distanceX);
-            let y = Math.abs(pointer.y - distanceY);
-            if (x < 5 && y < 5) {
-                return;
-            }
-            if (x > y) {
-                sprite.input.setDragLock(true, false);
-            } else {
-                sprite.input.setDragLock(false, true);
-            }
-            lockedAxis = true;
-        }
-
-    }
     function onDragStop(sprite, pointer) {
+        if (movesDone >= MOVES) {
+             player.input.disableDrag();
+             return;
+        }
         let x = pointer.x - distanceX;
         let y = pointer.y - distanceY;
         click = game.add.audio('click', volume);
         click.play();    
-        if (movesDone < MOVES) {
-            if (Math.abs(x) > Math.abs(y)) { //Horizontal move
-                if (x > 0 && sprite.pos.x < BOARD_WIDTH-1) {
-                    movePlayer(RIGHT);
-                } else if (x < 0 && sprite.pos.x > 0) {
-                    movePlayer(LEFT);
-                }
-                reposition(player);
-            } else if (Math.abs(x) < Math.abs(y)) {
-                if (y > 0 && sprite.pos.y < BOARD_HEIGHT-sprite.gameLength) {
-                    verticalMove(DOWN);
-                } else if (y < 0 && sprite.pos.y > 1) {
-                    verticalMove(UP);
-                }
-                reposition(player);
-            } else if (x == 0 && y == 0){
-                movesDone++;
+
+        if (x == 0 && y == 0) {
+            movesDone++;
+        } else if (Math.abs(x) > Math.abs(y)) {
+            // Horizontal Move
+            if (x > 0 && player.pos.x < BOARD_WIDTH-1) {
+                movePlayer(RIGHT);
+            } else if (x < 0 && player  .pos.x > 0) {
+                movePlayer(LEFT);
             }
-            reposition(player);
-            updateBoard();
+        } else if (Math.abs(x) <= Math.abs(y)) {
+            // Vertical Move
+            if (y > 0 && player.pos.y < BOARD_HEIGHT-player.gameLength) {
+                verticalMove(DOWN);
+            } else if (y < 0 && player.pos.y > 1) {
+                verticalMove(UP);
+            }
         }
-        if (movesDone == MOVES) {
-            player.input.disableDrag();
-        }
-        sprite.input.setDragLock(false, false);
+        reposition(player);
+        updateBoard();
+        player.input.setDragLock(false, false);
     }
 }
 
@@ -398,66 +378,64 @@ function makeBarrier(xPos, yPos) {
 
 function makeEvent(i) {
     var num = Math.random();
+    let event = createSprite(0, BOARD_HEIGHT+1, 'eventBorder', 1.5*TILE_SIZE, 1.5*TILE_SIZE);
+    event.x = game.world.centerX +  (i-Math.floor(EVENTS_SHOWN/2))*(TILE_SIZE*1.5);
     if (num < SPAWN_CHANCE) {
         if (num < OBSTACLE_SPAWN) {
-            let event = createSprite(i+2, BOARD_HEIGHT+1, 'obstacle', TILE_SIZE, TILE_SIZE/3);
-            event.x += (i-(EVENTS_SHOWN/2))*10;
+            event.frame = 0;
             events.push(["OBSTACLE", event]);
         } else {
-            let event = createSprite(i+2, BOARD_HEIGHT+1, 'car');
-            event.x += (i-(EVENTS_SHOWN/2))*10;
+            event.frame = 1;
             events.push(["CAR", event]);
         }
     } else {
         if (Math.random() < 0.5) {
-            let event = createSprite(i+2, BOARD_HEIGHT+1, 'barrier');
-            event.x += (i-(EVENTS_SHOWN/2))*10;
-            event.tint = 0x00ff00;
+            event.frame = 2;
             events.push(["GROW", event])
         } else {
-            let event = createSprite(i+2, BOARD_HEIGHT+1, 'barrier');
-            event.x += (i-(EVENTS_SHOWN/2))*10;
-            event.tint = 0xff0000;
+            event.frame = 3;
             events.push(["SHRINK", event])
         }
     }
 }
 
-function makeTracks(character, image) {
-    let yPlacement = character.pos.y+character.gameLength-0.50;
-    if (!character.allTracks || character.allTracks.length == 0) {
-        character.allTracks = [];
-        let tracks = createSprite(character.pos.x, yPlacement, image, TILE_SIZE, TILE_SIZE/5);
-        tracks.x = character.x;
-        character.allTracks.push(tracks);
-        return;
-
-    } else {
-        let previousTrack = character.allTracks[character.allTracks.length-1];
-        
-        if (previousTrack.y >= yLoc(yPlacement)+previousTrack.height) {
-            let tracks = createSprite(character.pos.x, yPlacement, image, TILE_SIZE, TILE_SIZE/5);
-            tracks.x = character.x;
-            character.allTracks.push(tracks);
-        }
-        let dead_tracks = []
-    
-        character.allTracks.forEach(function(element) {
-            element.y += 4;
-            element.alpha = Math.max(element.alpha-0.1, 0);
-            if (element.alpha == 0) {
-                dead_tracks.push(element);
-            }
-        }, this);
-        
-        dead_tracks.forEach(function(tracks) {
-            killObject(tracks, character.allTracks);
-        }, this);
-    }
+function makeTracks(character, image, yPlacement) {
+    let tracks = createSprite(character.pos.x, yPlacement, image, TILE_SIZE, TILE_SIZE/5);
+    tracks.x = character.x;
+    character.allTracks.push(tracks);
 }
 
-
 // Moving Methods
+function moveTracks(character, image) {
+    let yPlacement = character.pos.y+character.gameLength-0.50;
+
+    if (!character.allTracks || character.allTracks.length == 0) {
+        character.allTracks = [];
+        makeTracks(character, image, yPlacement);
+        return;
+
+    }
+
+    let previousTrack = character.allTracks[character.allTracks.length-1];
+    
+    if (previousTrack.y >= yLoc(yPlacement)+previousTrack.height) {
+        makeTracks(character, image, yPlacement);
+    }
+    let dead_tracks = []
+
+    character.allTracks.forEach(function(element) {
+        element.y += 4;
+        element.alpha = Math.max(element.alpha-0.1, 0);
+        if (element.alpha == 0) {
+            dead_tracks.push(element);
+        }
+    }, this);
+    
+    dead_tracks.forEach(function(tracks) {
+        killObject(tracks, character.allTracks);
+    }, this);
+}
+
 function moveBarriers() {
     let x1 = 0;
     let x2 = BOARD_WIDTH-1;
@@ -609,7 +587,6 @@ function killPlayer(TYPE) {
 function killObject(object, objects) {
     deleteFromList(objects, object);
     if (object.allTracks) {
-        console.log("No traces");
         for (var i = 0; i < object.allTracks.length; i++) {
             object.allTracks[i].destroy();
         }
@@ -620,8 +597,6 @@ function killObject(object, objects) {
 function reposition(character) {
     game.add.tween(character).to( { x: xLoc(character.pos.x) }, 250, Phaser.Easing.Linear.InOut, true);
     game.add.tween(character).to( { y: yLoc(character.pos.y) }, 250, Phaser.Easing.Linear.InOut, true);
-    // character.x = ;
-    // character.y = yLoc(character.pos.y);
 }
 
 function createSprite(x, y, sprite, sizeX = TILE_SIZE, sizeY = TILE_SIZE) {
@@ -656,11 +631,13 @@ function updateLevel() {
 function updateEvents() {
     for (let i = 0; i < events.length; i++) {
         let event = events[i];
-        event[1].x = xLoc(i+2) + (i-(EVENTS_SHOWN/2))*10;
+        events[i][1].tint = 0x999999;    
+        event[1].x = game.world.centerX +  (i-Math.floor(EVENTS_SHOWN/2))*(TILE_SIZE*1.5);
     }
     console.log(turns, eventCount);
     let turnsLeft = turns - eventCount;
-    eventText.text = "NEXT IN \n" + turnsLeft + " TURNS";
+    events[0][1].tint = 0xffffff;
+    eventText.text = " NEXT IN \n\n\n\n\n\n\n " + turnsLeft + " TURNS";
 }
 
 // Making the black spot
