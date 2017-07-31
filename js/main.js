@@ -655,7 +655,7 @@ function updateLevel() {
 }
 
 function updateEvents() {
-    if (!events) {
+    if (events.length == 0) {
         console.log("Couldn't update events");
         return;
     }
